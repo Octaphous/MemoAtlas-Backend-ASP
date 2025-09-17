@@ -1,0 +1,12 @@
+{
+    "version": "1",
+    "name": "MemoAtlas",
+    "type": "collection",
+    "ignore": [".git"],
+    "size": 0.0008096694946289062,
+    "filesCount": 4,
+    "presets": {
+        "requestType": "http",
+        "requestUrl": "http://localhost:3000"
+    }
+}
