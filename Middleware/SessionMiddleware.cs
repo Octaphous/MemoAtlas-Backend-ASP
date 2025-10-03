@@ -7,14 +7,14 @@ public class SessionMiddleware(RequestDelegate next)
 {
     public async Task Invoke(HttpContext context, AppDbContext dbContext)
     {
-        if (context.Request.Cookies.TryGetValue("session_token", out string? token))
+        if (context.Request.Cookies.TryGetValue("SessionToken", out string? token))
         {
             Session? session = await dbContext.Sessions.Include(s => s.User)
                                                       .FirstOrDefaultAsync(s => s.SessionToken == token && s.ExpiresAt > DateTime.UtcNow);
 
             if (session != null)
             {
-                context.Items["Session"] = new UserDTO(session.User);
+                context.Items["User"] = new UserDTO(session.User);
             }
         }
 
