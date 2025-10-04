@@ -41,9 +41,10 @@ namespace MemoAtlas_Backend_ASP.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteMemo(int id)
+        public async Task<IActionResult> DeleteMemo(int id)
         {
-            return Ok();
+            await memoService.DeleteMemoAsync(id);
+            return NoContent();
         }
     }
 }

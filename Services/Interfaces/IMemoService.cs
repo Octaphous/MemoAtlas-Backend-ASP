@@ -7,5 +7,6 @@ namespace MemoAtlas_Backend_ASP.Services.Interfaces
     {
         Task<List<MemoData>> GetAllMemosAsync();
         Task<MemoData> CreateMemoAsync(MemoCreateBody body);
+        Task DeleteMemoAsync(int id);
     }
 }

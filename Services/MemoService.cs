@@ -93,7 +93,7 @@ public class MemoService(AppDbContext db, IUserContext userContext) : IMemoServi
     public async Task DeleteMemoAsync(int memoId)
     {
         UserData user = userContext.GetRequiredUser();
-        Memo memo = await db.Memos.FirstOrDefaultAsync(m => m.Id == memoId && m.UserId == user.Id) ?? throw new ForbiddenResourceException("Memo not found.");
+        Memo memo = await db.Memos.FirstOrDefaultAsync(m => m.Id == memoId && m.UserId == user.Id) ?? throw new InvalidResourceException();
         db.Memos.Remove(memo);
         await db.SaveChangesAsync();
     }

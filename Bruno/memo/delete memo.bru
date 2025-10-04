@@ -1,0 +1,15 @@
+meta {
+  name: delete memo
+  type: http
+  seq: 2
+}
+
+delete {
+  url: http://localhost:5240/api/memos/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
