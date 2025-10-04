@@ -1,5 +1,4 @@
 ﻿using MemoAtlas_Backend_ASP.Data;
-using MemoAtlas_Backend_ASP.Extensions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Services;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
@@ -17,7 +16,6 @@ namespace MemoAtlas_Backend_ASP.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             UserData? user = await authService.RegisterUserAsync(body);
-            if (user == null) return this.ErrorMsg("User registration failed");
 
             return Ok(user);
         }
@@ -27,8 +25,7 @@ namespace MemoAtlas_Backend_ASP.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            string? token = await authService.LoginUserAsync(body);
-            if (token == null) return Unauthorized("Invalid email or password");
+            string token = await authService.LoginUserAsync(body);
 
             Response.Cookies.Append("SessionToken", token, new CookieOptions
             {

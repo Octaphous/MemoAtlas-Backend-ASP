@@ -1,4 +1,6 @@
+using System.Net;
 using MemoAtlas_Backend_ASP.Data;
+using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
@@ -11,10 +13,13 @@ public class AuthService(AppDbContext context) : IAuthService
 {
     private readonly PasswordHasher<object?> passwordHasher = new();
 
-    public async Task<UserData?> RegisterUserAsync(AuthRegisterBody body)
+    public async Task<UserData> RegisterUserAsync(AuthRegisterBody body)
     {
         bool userExists = await context.Users.AnyAsync(u => u.Email == body.Email);
-        if (userExists) return null;
+        if (userExists)
+        {
+            throw new BaseException("A user with this email already exists.", HttpStatusCode.Conflict);
+        }
 
         string passwordHash = passwordHasher.HashPassword(null, body.Password);
 
@@ -30,13 +35,19 @@ public class AuthService(AppDbContext context) : IAuthService
         return new UserData(user);
     }
 
-    public async Task<string?> LoginUserAsync(AuthLoginBody body)
+    public async Task<string> LoginUserAsync(AuthLoginBody body)
     {
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Email == body.Email);
-        if (user == null) return null;
+        if (user == null)
+        {
+            throw new UnauthenticatedException();
+        }
 
         PasswordVerificationResult result = passwordHasher.VerifyHashedPassword(null, user.PasswordHash, body.Password);
-        if (result == PasswordVerificationResult.Failed) return null;
+        if (result == PasswordVerificationResult.Failed)
+        {
+            throw new UnauthenticatedException();
+        }
 
         Session session = new()
         {
