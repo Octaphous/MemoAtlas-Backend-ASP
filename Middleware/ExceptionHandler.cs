@@ -1,0 +1,36 @@
+
+using MemoAtlas_Backend_ASP.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
+namespace MemoAtlas_Backend_ASP.Middleware
+{
+    public class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExceptionHandler
+    {
+
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+        {
+
+            ProblemDetails problemDetails = new()
+            {
+                Instance = httpContext.Request.Path
+            };
+
+            if (exception is BaseException e)
+            {
+                httpContext.Response.StatusCode = (int)e.StatusCode;
+                problemDetails.Title = e.Message;
+            }
+            else
+            {
+                httpContext.Response.StatusCode = 500;
+                problemDetails.Title = exception.Message;
+            }
+
+            logger.LogError(problemDetails.Title);
+            problemDetails.Status = httpContext.Response.StatusCode;
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+    }
+}

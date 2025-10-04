@@ -1,3 +1,4 @@
+using MemoAtlas_Backend_ASP.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -9,7 +10,7 @@ namespace MemoAtlas_Backend_ASP.Filters
         {
             if (context.HttpContext.Items["User"] == null)
             {
-                context.Result = new UnauthorizedResult();
+                throw new UnauthenticatedException();
             }
         }
     }

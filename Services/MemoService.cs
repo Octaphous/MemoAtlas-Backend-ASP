@@ -1,4 +1,5 @@
 using MemoAtlas_Backend_ASP.Data;
+using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
@@ -21,32 +22,32 @@ public class MemoService(AppDbContext db, IUserContext userContext) : IMemoServi
         bool dateExists = await db.Memos.AnyAsync(m => m.UserId == user.Id && m.Date == body.Date);
         if (dateExists)
         {
-            throw new InvalidOperationException("A memo for this date already exists.");
+            throw new InvalidPayloadException("A memo for this date already exists.");
         }
 
         List<int> tagIds = body.Tags ?? [];
         if (tagIds.Count != tagIds.Distinct().Count())
         {
-            throw new InvalidOperationException("Duplicate tags are not allowed.");
+            throw new InvalidPayloadException("Duplicate tags are not allowed.");
         }
 
         List<Tag> tags = await db.Tags.Where(t => tagIds.Contains(t.Id)).ToListAsync();
         if (tags.Count != tagIds.Count)
         {
-            throw new InvalidOperationException("One or more tags do not exist.");
+            throw new InvalidPayloadException("One or more tags do not exist.");
         }
 
         List<PromptValueBody> promptValues = body.Prompts ?? [];
         List<int> promptIds = [.. promptValues.Select(pv => pv.PromptId)];
         if (promptIds.Count != promptIds.Distinct().Count())
         {
-            throw new InvalidOperationException("Duplicate prompts are not allowed.");
+            throw new InvalidPayloadException("Duplicate prompts are not allowed.");
         }
 
         List<Prompt> prompts = await db.Prompts.Where(p => p.UserId == user.Id && promptIds.Contains(p.Id)).ToListAsync();
         if (prompts.Count != promptIds.Count)
         {
-            throw new InvalidOperationException("One or more prompts do not exist.");
+            throw new InvalidPayloadException("One or more prompts do not exist.");
         }
 
         foreach (PromptValueBody pv in promptValues)
@@ -55,11 +56,11 @@ public class MemoService(AppDbContext db, IUserContext userContext) : IMemoServi
 
             if (prompt.Type == PromptType.Text && pv.Value is not string)
             {
-                throw new InvalidOperationException($"Prompt {prompt.Id} requires a text value.");
+                throw new InvalidPayloadException($"Prompt {prompt.Id} requires a text value.");
             }
             else if (prompt.Type == PromptType.Number && pv.Value is not int)
             {
-                throw new InvalidOperationException($"Prompt {prompt.Id} requires a number value.");
+                throw new InvalidPayloadException($"Prompt {prompt.Id} requires a number value.");
             }
         }
 
@@ -87,5 +88,13 @@ public class MemoService(AppDbContext db, IUserContext userContext) : IMemoServi
         await db.SaveChangesAsync();
 
         return new MemoData(memo);
+    }
+
+    public async Task DeleteMemoAsync(int memoId)
+    {
+        UserData user = userContext.GetRequiredUser();
+        Memo memo = await db.Memos.FirstOrDefaultAsync(m => m.Id == memoId && m.UserId == user.Id) ?? throw new ForbiddenResourceException("Memo not found.");
+        db.Memos.Remove(memo);
+        await db.SaveChangesAsync();
     }
 }

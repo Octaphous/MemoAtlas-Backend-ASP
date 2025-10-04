@@ -3,21 +3,24 @@ using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-public class SessionMiddleware(RequestDelegate next)
+namespace MemoAtlas_Backend_ASP.Middleware
 {
-    public async Task Invoke(HttpContext context, AppDbContext dbContext)
+    public class SessionMiddleware(RequestDelegate next)
     {
-        if (context.Request.Cookies.TryGetValue("SessionToken", out string? token))
+        public async Task Invoke(HttpContext context, AppDbContext dbContext)
         {
-            Session? session = await dbContext.Sessions.Include(s => s.User)
-                                                      .FirstOrDefaultAsync(s => s.SessionToken == token && s.ExpiresAt > DateTime.UtcNow);
-
-            if (session != null)
+            if (context.Request.Cookies.TryGetValue("SessionToken", out string? token))
             {
-                context.Items["User"] = new UserData(session.User);
-            }
-        }
+                Session? session = await dbContext.Sessions.Include(s => s.User)
+                                                          .FirstOrDefaultAsync(s => s.SessionToken == token && s.ExpiresAt > DateTime.UtcNow);
 
-        await next(context);
+                if (session != null)
+                {
+                    context.Items["User"] = new UserData(session.User);
+                }
+            }
+
+            await next(context);
+        }
     }
 }
