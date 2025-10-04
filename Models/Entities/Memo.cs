@@ -6,7 +6,7 @@
 
         public required int UserId { get; set; }
 
-        public required DateTime Date { get; set; }
+        public required DateOnly Date { get; set; }
 
         // Navigation properties
         public User User { get; set; } = null!;

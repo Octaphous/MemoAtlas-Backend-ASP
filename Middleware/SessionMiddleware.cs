@@ -14,7 +14,7 @@ public class SessionMiddleware(RequestDelegate next)
 
             if (session != null)
             {
-                context.Items["User"] = new UserDTO(session.User);
+                context.Items["User"] = new UserData(session.User);
             }
         }
 

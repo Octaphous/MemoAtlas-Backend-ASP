@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public required int MemoId { get; set; }
+        public int MemoId { get; set; }
 
-        public required int PromptId { get; set; }
+        public int PromptId { get; set; }
 
         public string? TextValue { get; set; }
 

@@ -14,7 +14,7 @@ namespace MemoAtlas_Backend_ASP.Controllers
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
-            UserDTO user = userContext.CurrentUser!;
+            UserData user = userContext.CurrentUser!;
             return Ok(user);
         }
     }

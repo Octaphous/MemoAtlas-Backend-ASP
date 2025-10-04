@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MemoAtlas_Backend_ASP.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController(IAuthService authService) : ControllerBase
     {
@@ -16,7 +16,7 @@ namespace MemoAtlas_Backend_ASP.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            UserDTO? user = await authService.RegisterUserAsync(body);
+            UserData? user = await authService.RegisterUserAsync(body);
             if (user == null) return this.ErrorMsg("User registration failed");
 
             return Ok(user);

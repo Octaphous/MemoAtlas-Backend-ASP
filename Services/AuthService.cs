@@ -11,7 +11,7 @@ public class AuthService(AppDbContext context) : IAuthService
 {
     private readonly PasswordHasher<object?> passwordHasher = new();
 
-    public async Task<UserDTO?> RegisterUserAsync(AuthRegisterBody body)
+    public async Task<UserData?> RegisterUserAsync(AuthRegisterBody body)
     {
         bool userExists = await context.Users.AnyAsync(u => u.Email == body.Email);
         if (userExists) return null;
@@ -27,7 +27,7 @@ public class AuthService(AppDbContext context) : IAuthService
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return new UserDTO(user);
+        return new UserData(user);
     }
 
     public async Task<string?> LoginUserAsync(AuthLoginBody body)

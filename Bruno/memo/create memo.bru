@@ -1,0 +1,22 @@
+meta {
+  name: create memo
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:5240/api/memos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "date": "2025-10-04",
+    "title": "hej"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

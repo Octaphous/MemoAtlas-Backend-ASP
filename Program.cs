@@ -1,14 +1,16 @@
 using MemoAtlas_Backend_ASP.Data;
+using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Services;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddControllers(/*options =>
+{
+    options.Filters.Add<ApiExceptionFilter>();
+}*/);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -18,9 +20,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IMemoService, MemoService>();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<SessionMiddleware>();
 
 // Configure the HTTP request pipeline.

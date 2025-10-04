@@ -4,6 +4,7 @@ namespace MemoAtlas_Backend_ASP.Services.Interfaces
 {
     public interface IUserContext
     {
-        UserDTO? CurrentUser { get; }
+        UserData? CurrentUser { get; }
+        UserData GetRequiredUser();
     }
 }
