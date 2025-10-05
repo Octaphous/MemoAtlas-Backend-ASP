@@ -1,0 +1,23 @@
+meta {
+  name: create tag
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5240/api/tags
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "spela",
+    "description": "spela spel",
+    "groupId": 1
+  }
+}
+
+settings {
+  encodeUrl: true
+}

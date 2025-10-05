@@ -1,0 +1,26 @@
+meta {
+  name: update tag
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5240/api/tags/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "name": "spel",
+    "description": "digitala spel"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

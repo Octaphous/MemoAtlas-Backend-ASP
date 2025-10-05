@@ -13,6 +13,7 @@ namespace MemoAtlas_Backend_ASP.Models.DTOs
         {
             public int Id { get; set; } = tag.Id;
             public string Name { get; set; } = tag.Name;
+            public string Description { get; set; } = tag.Description;
         }
     }
 }

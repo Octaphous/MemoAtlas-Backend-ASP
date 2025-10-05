@@ -1,0 +1,13 @@
+using MemoAtlas_Backend_ASP.Models.DTOs;
+
+namespace MemoAtlas_Backend_ASP.Services.Interfaces
+{
+    public interface ITagService
+    {
+        Task<List<TagData>> GetAllTagsAsync(UserData user);
+        Task<TagData> GetTagAsync(UserData user, int id);
+        Task<TagData> CreateTagAsync(UserData user, TagCreateBody body);
+        Task UpdateTagAsync(UserData user, int id, TagUpdateBody body);
+        Task DeleteTagAsync(UserData user, int id);
+    }
+}

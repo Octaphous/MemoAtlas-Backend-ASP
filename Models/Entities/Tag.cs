@@ -4,9 +4,11 @@
     {
         public int Id { get; set; }
 
-        public int TagGroupId { get; set; }
+        public required int TagGroupId { get; set; }
 
-        public string Name { get; set; } = null!;
+        public required string Name { get; set; }
+
+        public required string Description { get; set; }
 
         // Navigation properties
         public TagGroup TagGroup { get; set; } = null!;

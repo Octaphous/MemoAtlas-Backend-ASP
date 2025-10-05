@@ -13,7 +13,7 @@ namespace MemoAtlas_Backend_ASP.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTagGroups()
         {
-            TagGroupData[] tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
+            List<TagGroupData> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
             return Ok(tagGroups);
         }
 

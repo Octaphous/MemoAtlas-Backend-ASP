@@ -1,0 +1,15 @@
+meta {
+  name: get all tags
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5240/api/tags
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

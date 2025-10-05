@@ -20,6 +20,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITagGroupService, TagGroupService>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IMemoService, MemoService>();
 
 var app = builder.Build();

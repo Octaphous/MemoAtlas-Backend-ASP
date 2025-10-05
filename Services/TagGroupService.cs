@@ -11,23 +11,22 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class TagGroupService(AppDbContext db) : ITagGroupService
 {
-    public async Task<TagGroupData[]> GetAllTagGroupsAsync(UserData user)
+    public async Task<List<TagGroupData>> GetAllTagGroupsAsync(UserData user)
     {
-        TagGroup[] tagGroups = await db.TagGroups
+        List<TagGroup> tagGroups = await db.TagGroups
             .Where(tg => tg.UserId == user.Id)
-            .ToArrayAsync();
+            .Include(tg => tg.Tags)
+            .ToListAsync();
 
         return [.. tagGroups.Select(tg => new TagGroupData(tg))];
     }
 
     public async Task<TagGroupData> GetTagGroupAsync(UserData user, int id)
     {
-        TagGroup? tagGroup = await db.TagGroups
+        TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)
-            .FirstOrDefaultAsync();
-
-        if (tagGroup == null)
-            throw new InvalidResourceException("Tag group not found.");
+            .Include(tg => tg.Tags)
+            .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
 
         return new TagGroupData(tagGroup);
     }
@@ -54,7 +53,7 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
 
     public async Task UpdateTagGroupAsync(UserData user, int id, TagGroupUpdateBody body)
     {
-        TagGroup? tagGroup = await db.TagGroups
+        TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
 
@@ -77,12 +76,9 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
 
     public async Task DeleteTagGroupAsync(UserData user, int id)
     {
-        TagGroup? tagGroup = await db.TagGroups
+        TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)
-            .FirstOrDefaultAsync();
-
-        if (tagGroup == null)
-            throw new InvalidResourceException("Tag group not found.");
+            .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
 
         db.TagGroups.Remove(tagGroup);
         await db.SaveChangesAsync();
