@@ -68,6 +68,5 @@ public class AuthService(AppDbContext context) : IAuthService
 
         context.Sessions.Remove(session);
         await context.SaveChangesAsync();
-
     }
 }

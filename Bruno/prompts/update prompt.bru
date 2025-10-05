@@ -1,0 +1,25 @@
+meta {
+  name: update prompt
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5240/api/prompts/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "question": "Hur många km har du gått idag?"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
