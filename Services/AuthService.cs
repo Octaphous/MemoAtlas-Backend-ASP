@@ -18,7 +18,7 @@ public class AuthService(AppDbContext context) : IAuthService
         bool userExists = await context.Users.AnyAsync(u => u.Email == body.Email);
         if (userExists)
         {
-            throw new BaseException("A user with this email already exists.", HttpStatusCode.Conflict);
+            throw new ResourceConflictException("A user with this email already exists.");
         }
 
         string passwordHash = passwordHasher.HashPassword(null, body.Password);
@@ -40,13 +40,13 @@ public class AuthService(AppDbContext context) : IAuthService
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Email == body.Email);
         if (user == null)
         {
-            throw new UnauthenticatedException();
+            throw new UnauthenticatedException("Invalid email or password.");
         }
 
         PasswordVerificationResult result = passwordHasher.VerifyHashedPassword(null, user.PasswordHash, body.Password);
         if (result == PasswordVerificationResult.Failed)
         {
-            throw new UnauthenticatedException();
+            throw new UnauthenticatedException("Invalid email or password.");
         }
 
         Session session = new()

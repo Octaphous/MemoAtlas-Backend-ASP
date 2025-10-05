@@ -1,3 +1,4 @@
+using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 
@@ -7,5 +8,5 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
 {
     public UserData? CurrentUser => httpContextAccessor.HttpContext?.Items["User"] as UserData;
 
-    public UserData GetRequiredUser() => CurrentUser ?? throw new UnauthorizedAccessException("User not authenticated");
+    public UserData GetRequiredUser() => CurrentUser ?? throw new UnauthenticatedException();
 }
