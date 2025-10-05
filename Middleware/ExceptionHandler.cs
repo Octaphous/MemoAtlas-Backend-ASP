@@ -16,7 +16,7 @@ namespace MemoAtlas_Backend_ASP.Middleware
                 Instance = httpContext.Request.Path
             };
 
-            if (exception is BaseException e)
+            if (exception is StatusCodeException e)
             {
                 httpContext.Response.StatusCode = (int)e.StatusCode;
                 problemDetails.Title = e.Message;

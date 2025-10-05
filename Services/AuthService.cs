@@ -52,24 +52,22 @@ public class AuthService(AppDbContext context) : IAuthService
         Session session = new()
         {
             UserId = user.Id,
-            SessionToken = Guid.NewGuid().ToString(),
+            Token = Guid.NewGuid().ToString(),
             ExpiresAt = DateTime.UtcNow.AddHours(1)
         };
 
         context.Sessions.Add(session);
         await context.SaveChangesAsync();
 
-        return session.SessionToken;
+        return session.Token;
     }
 
     public async Task LogoutUserAsync(string token)
     {
-        Session? session = await context.Sessions.FirstOrDefaultAsync(s => s.SessionToken == token);
+        Session session = await context.Sessions.FirstOrDefaultAsync(s => s.Token == token) ?? throw new UnauthenticatedException("Invalid session token.");
 
-        if (session != null)
-        {
-            context.Sessions.Remove(session);
-            await context.SaveChangesAsync();
-        }
+        context.Sessions.Remove(session);
+        await context.SaveChangesAsync();
+
     }
 }

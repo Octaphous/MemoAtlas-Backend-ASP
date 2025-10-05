@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251005165324_initial")]
+    [Migration("20251005180546_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -100,7 +100,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("SessionToken")
+                    b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

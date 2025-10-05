@@ -74,7 +74,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    SessionToken = table.Column<string>(type: "TEXT", nullable: false)
+                    Token = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
