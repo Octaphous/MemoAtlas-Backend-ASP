@@ -1,0 +1,26 @@
+meta {
+  name: update tag group
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5240/api/tag-groups/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "name": "personer",
+    "color": "yellow"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -8,7 +8,7 @@
 
         public required string Name { get; set; }
 
-        public required string ColorHex { get; set; }
+        public required string Color { get; set; }
 
         // Navigation properties
         public User User { get; set; } = null!;

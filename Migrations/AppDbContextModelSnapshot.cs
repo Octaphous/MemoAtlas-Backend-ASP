@@ -23,7 +23,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -137,7 +137,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ColorHex")
+                    b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

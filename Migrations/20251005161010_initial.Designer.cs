@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250917004656_Initial")]
-    partial class Initial
+    [Migration("20251005161010_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -140,7 +140,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ColorHex")
+                    b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

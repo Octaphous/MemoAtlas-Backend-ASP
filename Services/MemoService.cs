@@ -58,7 +58,7 @@ public class MemoService(AppDbContext db, IUserContext userContext) : IMemoServi
             {
                 throw new InvalidPayloadException($"Prompt {prompt.Id} requires a text value.");
             }
-            else if (prompt.Type == PromptType.Number && pv.Value is not int)
+            else if (prompt.Type == PromptType.Number && pv.Value is not double)
             {
                 throw new InvalidPayloadException($"Prompt {prompt.Id} requires a number value.");
             }

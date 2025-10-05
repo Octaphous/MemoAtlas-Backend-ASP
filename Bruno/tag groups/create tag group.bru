@@ -1,0 +1,22 @@
+meta {
+  name: create tag group
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5240/api/tag-groups
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "aktiviteter",
+    "color": "blue"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

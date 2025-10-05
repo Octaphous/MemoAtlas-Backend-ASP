@@ -8,13 +8,11 @@ namespace MemoAtlas_Backend_ASP.Controllers
     [Route("api/memos")]
     [AuthRequired]
     [ApiController]
-    public class MemoController(IUserContext userContext, IMemoService memoService) : ControllerBase
+    public class MemoController(IMemoService memoService) : ControllerBase
     {
         [HttpGet]
         public IActionResult GetAllMemos()
         {
-            UserData user = userContext.CurrentUser!;
-
             return Ok();
         }
 
