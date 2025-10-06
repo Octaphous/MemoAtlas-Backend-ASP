@@ -11,10 +11,17 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class MemoService(AppDbContext db, ITagService tagService, IPromptService promptService) : IMemoService
 {
-    public async Task<List<SummarizedMemoData>> GetAllMemosAsync(UserData user)
+    public async Task<List<SummarizedMemoData>> ListAllMemosAsync(UserData user)
     {
         List<SummarizedMemoData> memos = await db.Memos.Where(m => m.UserId == user.Id)
-            .Select(m => new SummarizedMemoData(m, m.Tags.Count, m.PromptAnswers.Count))
+            .Select(m => new SummarizedMemoData
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Date = m.Date,
+                TagCount = m.Tags.Count,
+                PromptCount = m.PromptAnswers.Count
+            })
             .ToListAsync();
 
         return memos;
@@ -43,7 +50,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         List<Tag> tags = [];
         if (body.Tags != null)
         {
-            await VerifyAndGetTags(user, body.Tags);
+            List<TagData> tagData = await tagService.GetTagsAsync(user, body.Tags);
             tags = [.. db.Tags.Where(t => body.Tags.Contains(t.Id))];
         }
 
@@ -84,16 +91,14 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
 
         if (body.Tags != null)
         {
-            await VerifyAndGetTags(user, body.Tags);
+            List<TagData> tagData = await tagService.GetTagsAsync(user, body.Tags);
             List<Tag> tags = [.. db.Tags.Where(t => body.Tags.Contains(t.Id))];
-
             memo.Tags = tags;
         }
 
         if (body.Prompts != null)
         {
             List<PromptAnswer> promptAnswers = await CreatePromptAnswers(user, body.Prompts);
-
             memo.PromptAnswers = promptAnswers;
         }
 
@@ -107,43 +112,8 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         await db.SaveChangesAsync();
     }
 
-    private async Task<List<TagData>> VerifyAndGetTags(UserData user, List<int> tagIds)
+    private void VerifyPromptValues(UserData user, List<PromptValueBody> promptValues, List<PromptData> prompts)
     {
-        if (tagIds.Count != tagIds.Distinct().Count())
-        {
-            throw new InvalidPayloadException("Duplicate tags are not allowed.");
-        }
-
-        List<TagData> tags = await tagService.GetTagsAsync(user, tagIds);
-        if (tags.Count != tagIds.Count)
-        {
-            throw new InvalidPayloadException("One or more tags do not exist.");
-        }
-
-        return tags;
-    }
-
-    private async Task<List<PromptData>> VerifyAndGetPrompts(UserData user, List<PromptValueBody> promptValues)
-    {
-        List<int> promptIds = [.. promptValues.Select(pv => pv.PromptId)];
-        if (promptIds.Count != promptIds.Distinct().Count())
-        {
-            throw new InvalidPayloadException("Duplicate prompts are not allowed.");
-        }
-
-        List<PromptData> prompts = await promptService.GetPromptsAsync(user, promptIds);
-        if (prompts.Count != promptIds.Count)
-        {
-            throw new InvalidPayloadException("One or more prompts do not exist.");
-        }
-
-        return prompts;
-    }
-
-    private async Task VerifyPromptValues(UserData user, List<PromptValueBody> promptValues)
-    {
-        List<PromptData> prompts = await VerifyAndGetPrompts(user, promptValues);
-
         foreach (PromptValueBody pv in promptValues)
         {
             PromptData prompt = prompts.First(p => p.Id == pv.PromptId);
@@ -161,8 +131,10 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
 
     private async Task<List<PromptAnswer>> CreatePromptAnswers(UserData user, List<PromptValueBody> promptValues)
     {
-        List<PromptData> prompts = await VerifyAndGetPrompts(user, promptValues);
-        await VerifyPromptValues(user, promptValues);
+        List<int> promptIds = [.. promptValues.Select(pv => pv.PromptId)];
+        List<PromptData> prompts = await promptService.GetPromptsAsync(user, promptIds);
+
+        VerifyPromptValues(user, promptValues, prompts);
 
         return [.. promptValues.Select(pv =>
         {

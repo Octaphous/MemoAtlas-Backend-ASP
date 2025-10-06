@@ -23,10 +23,20 @@ public class TagService(AppDbContext db) : ITagService
 
     public async Task<List<TagData>> GetTagsAsync(UserData user, List<int> tagIds)
     {
+        if (tagIds.Count != tagIds.Distinct().Count())
+        {
+            throw new InvalidPayloadException("Some of the provided tag IDs are duplicates.");
+        }
+
         List<Tag> tags = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && tagIds.Contains(t.Id))
             .Include(t => t.TagGroup)
             .ToListAsync();
+
+        if (tags.Count != tagIds.Count)
+        {
+            throw new InvalidPayloadException("One or more of the provided tag IDs do not exist for this user.");
+        }
 
         return [.. tags.Select(t => new TagData(t))];
     }

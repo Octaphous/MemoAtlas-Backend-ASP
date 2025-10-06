@@ -22,9 +22,19 @@ public class PromptService(AppDbContext db) : IPromptService
 
     public async Task<List<PromptData>> GetPromptsAsync(UserData user, List<int> promptIds)
     {
+        if (promptIds.Count != promptIds.Distinct().Count())
+        {
+            throw new InvalidPayloadException("Some of the provided prompt IDs are duplicates.");
+        }
+
         List<Prompt> prompts = await db.Prompts
             .Where(p => p.UserId == user.Id && promptIds.Contains(p.Id))
             .ToListAsync();
+
+        if (prompts.Count != promptIds.Count)
+        {
+            throw new InvalidPayloadException("One or more of the provided prompt IDs do not exist for this user.");
+        }
 
         return [.. prompts.Select(p => new PromptData(p))];
     }
