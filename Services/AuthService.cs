@@ -15,7 +15,7 @@ public class AuthService(AppDbContext context) : IAuthService
 {
     private readonly PasswordHasher<object?> passwordHasher = new();
 
-    public async Task<UserResponse> RegisterUserAsync(AuthRegisterRequest body)
+    public async Task<User> RegisterUserAsync(AuthRegisterRequest body)
     {
         bool userExists = await context.Users.AnyAsync(u => u.Email == body.Email);
         if (userExists)
@@ -34,10 +34,10 @@ public class AuthService(AppDbContext context) : IAuthService
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return new UserResponse(user);
+        return user;
     }
 
-    public async Task<string> LoginUserAsync(AuthLoginRequest body)
+    public async Task<Session> LoginUserAsync(AuthLoginRequest body)
     {
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Email == body.Email);
         if (user == null)
@@ -61,7 +61,7 @@ public class AuthService(AppDbContext context) : IAuthService
         context.Sessions.Add(session);
         await context.SaveChangesAsync();
 
-        return session.Token;
+        return session;
     }
 
     public async Task LogoutUserAsync(string token)

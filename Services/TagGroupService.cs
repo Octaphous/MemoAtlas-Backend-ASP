@@ -13,27 +13,27 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class TagGroupService(AppDbContext db) : ITagGroupService
 {
-    public async Task<List<TagGroupResponse>> GetAllTagGroupsAsync(UserResponse user)
+    public async Task<List<TagGroup>> GetAllTagGroupsAsync(User user)
     {
         List<TagGroup> tagGroups = await db.TagGroups
             .Where(tg => tg.UserId == user.Id)
             .Include(tg => tg.Tags)
             .ToListAsync();
 
-        return [.. tagGroups.Select(tg => new TagGroupResponse(tg))];
+        return tagGroups;
     }
 
-    public async Task<TagGroupResponse> GetTagGroupAsync(UserResponse user, int id)
+    public async Task<TagGroup> GetTagGroupAsync(User user, int id)
     {
         TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)
             .Include(tg => tg.Tags)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
 
-        return new TagGroupResponse(tagGroup);
+        return tagGroup;
     }
 
-    public async Task<TagGroupResponse> CreateTagGroupAsync(UserResponse user, TagGroupCreateRequest body)
+    public async Task<TagGroup> CreateTagGroupAsync(User user, TagGroupCreateRequest body)
     {
         if (!AppConstants.AllowedTagColors.Contains(body.Color))
         {
@@ -50,10 +50,10 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
         db.TagGroups.Add(tagGroup);
         await db.SaveChangesAsync();
 
-        return new TagGroupResponse(tagGroup);
+        return tagGroup;
     }
 
-    public async Task UpdateTagGroupAsync(UserResponse user, int id, TagGroupUpdateRequest body)
+    public async Task<TagGroup> UpdateTagGroupAsync(User user, int id, TagGroupUpdateRequest body)
     {
         TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)
@@ -74,9 +74,10 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
         }
 
         await db.SaveChangesAsync();
+        return tagGroup;
     }
 
-    public async Task DeleteTagGroupAsync(UserResponse user, int id)
+    public async Task DeleteTagGroupAsync(User user, int id)
     {
         TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == id)

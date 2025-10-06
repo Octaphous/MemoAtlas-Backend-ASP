@@ -8,5 +8,5 @@ public class MemoSummarizedResponse
     public required string Title { get; set; }
     public required DateOnly Date { get; set; }
     public required int TagCount { get; set; }
-    public required int PromptCount { get; set; }
+    public required int PromptAnswerCount { get; set; }
 }

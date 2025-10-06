@@ -2,6 +2,7 @@ using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
+using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +16,15 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     [HttpGet]
     public async Task<IActionResult> GetAllPrompts()
     {
-        List<PromptResponse> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
-        return Ok(prompts);
+        List<Prompt> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
+        return Ok(prompts.Select(PromptMapper.ToResponse).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPrompt(int id)
     {
-        PromptResponse prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
-        return Ok(prompt);
+        Prompt prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
+        return Ok(PromptMapper.ToResponse(prompt));
     }
 
     [HttpPost]
@@ -31,8 +32,8 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        PromptResponse prompt = await promptService.CreatePromptAsync(auth.GetRequiredUser(), body);
-        return Ok(prompt);
+        Prompt prompt = await promptService.CreatePromptAsync(auth.GetRequiredUser(), body);
+        return Ok(PromptMapper.ToResponse(prompt));
     }
 
     [HttpPatch("{id}")]
@@ -40,8 +41,8 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        await promptService.UpdatePromptAsync(auth.GetRequiredUser(), id, body);
-        return Ok();
+        Prompt prompt = await promptService.UpdatePromptAsync(auth.GetRequiredUser(), id, body);
+        return Ok(PromptMapper.ToResponse(prompt));
     }
 
     [HttpDelete("{id}")]

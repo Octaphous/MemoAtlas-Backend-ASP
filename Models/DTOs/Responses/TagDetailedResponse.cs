@@ -2,12 +2,12 @@ using MemoAtlas_Backend_ASP.Models.Entities;
 
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class TagDetailedResponse(Tag tag)
+public class TagDetailedResponse
 {
-    public int Id { get; set; } = tag.Id;
-    public string Name { get; set; } = tag.Name;
-    public string Description { get; set; } = tag.Description;
-    public int GroupId { get; set; } = tag.TagGroupId;
-    public string GroupName { get; set; } = tag.TagGroup.Name;
-    public string GroupColor { get; set; } = tag.TagGroup.Color;
+    public required int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Description { get; set; }
+    public required int GroupId { get; set; }
+    public required string GroupName { get; set; }
+    public required string GroupColor { get; set; }
 }

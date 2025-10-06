@@ -3,6 +3,7 @@ using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
+using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        UserResponse user = await authService.RegisterUserAsync(body);
+        User user = await authService.RegisterUserAsync(body);
 
-        return Ok(user);
+        return Ok(UserMapper.ToResponse(user));
     }
 
     [HttpPost("login")]
@@ -28,9 +29,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        string token = await authService.LoginUserAsync(body);
+        Session session = await authService.LoginUserAsync(body);
 
-        Response.Cookies.Append(AppConstants.AuthTokenName, token, new CookieOptions
+        Response.Cookies.Append(AppConstants.AuthTokenName, session.Token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,

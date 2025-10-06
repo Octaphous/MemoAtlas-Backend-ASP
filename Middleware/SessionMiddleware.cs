@@ -18,7 +18,7 @@ public class SessionMiddleware(RequestDelegate next)
 
             if (session != null)
             {
-                context.Items["User"] = new UserResponse(session.User);
+                context.Items["User"] = session.User;
             }
         }
 

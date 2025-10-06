@@ -1,8 +1,10 @@
 using System.Text.Json;
 using MemoAtlas_Backend_ASP.Filters;
+using MemoAtlas_Backend_ASP.Mappers;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
+using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,8 +25,8 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMemo(int id)
     {
-        MemoResponse memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
-        return Ok(memo);
+        Memo memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
+        return Ok(MemoMapper.ToResponse(memo));
     }
 
     [HttpPost]
@@ -32,8 +34,8 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        MemoResponse createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
-        return Ok(createdMemo);
+        Memo createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
+        return Ok(MemoMapper.ToResponse(createdMemo));
     }
 
     [HttpPatch("{id}")]
@@ -41,8 +43,8 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        await memoService.UpdateMemoAsync(auth.GetRequiredUser(), id, memo);
-        return NoContent();
+        Memo updatedMemo = await memoService.UpdateMemoAsync(auth.GetRequiredUser(), id, memo);
+        return Ok(MemoMapper.ToResponse(updatedMemo));
     }
 
     [HttpDelete("{id}")]

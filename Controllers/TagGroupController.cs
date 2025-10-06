@@ -16,15 +16,15 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     [HttpGet]
     public async Task<IActionResult> GetAllTagGroups()
     {
-        List<TagGroupResponse> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
-        return Ok(tagGroups);
+        List<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
+        return Ok(tagGroups.Select(TagGroupMapper.ToResponse).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTagGroup(int id)
     {
-        TagGroupResponse tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
-        return Ok(tagGroup);
+        TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
+        return Ok(TagGroupMapper.ToResponse(tagGroup));
     }
 
     [HttpPost]
@@ -32,8 +32,8 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        TagGroupResponse tagGroup = await tagGroupService.CreateTagGroupAsync(auth.GetRequiredUser(), body);
-        return Ok(tagGroup);
+        TagGroup tagGroup = await tagGroupService.CreateTagGroupAsync(auth.GetRequiredUser(), body);
+        return Ok(TagGroupMapper.ToResponse(tagGroup));
     }
 
     [HttpPatch("{id}")]
@@ -41,8 +41,8 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        await tagGroupService.UpdateTagGroupAsync(auth.GetRequiredUser(), id, body);
-        return Ok();
+        TagGroup tagGroup = await tagGroupService.UpdateTagGroupAsync(auth.GetRequiredUser(), id, body);
+        return Ok(TagGroupMapper.ToResponse(tagGroup));
     }
 
     [HttpDelete("{id}")]

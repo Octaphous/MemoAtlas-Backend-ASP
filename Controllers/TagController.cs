@@ -2,6 +2,7 @@ using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
+using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +16,15 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     [HttpGet]
     public async Task<IActionResult> GetAllTags()
     {
-        List<TagDetailedResponse> tags = await tagService.GetAllTagsAsync(auth.GetRequiredUser());
-        return Ok(tags);
+        List<Tag> tags = await tagService.GetAllTagsAsync(auth.GetRequiredUser());
+        return Ok(tags.Select(TagMapper.ToDetailedResponse).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTag(int id)
     {
-        TagDetailedResponse tag = await tagService.GetTagAsync(auth.GetRequiredUser(), id);
-        return Ok(tag);
+        Tag tag = await tagService.GetTagAsync(auth.GetRequiredUser(), id);
+        return Ok(TagMapper.ToDetailedResponse(tag));
     }
 
     [HttpPost]
@@ -31,8 +32,8 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        TagDetailedResponse tag = await tagService.CreateTagAsync(auth.GetRequiredUser(), body);
-        return Ok(tag);
+        Tag tag = await tagService.CreateTagAsync(auth.GetRequiredUser(), body);
+        return Ok(TagMapper.ToDetailedResponse(tag));
     }
 
     [HttpPatch("{id}")]
@@ -40,8 +41,8 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        await tagService.UpdateTagAsync(auth.GetRequiredUser(), id, body);
-        return Ok();
+        Tag tag = await tagService.UpdateTagAsync(auth.GetRequiredUser(), id, body);
+        return Ok(TagMapper.ToDetailedResponse(tag));
     }
 
 

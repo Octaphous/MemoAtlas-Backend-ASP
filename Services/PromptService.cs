@@ -11,16 +11,16 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class PromptService(AppDbContext db) : IPromptService
 {
-    public async Task<List<PromptResponse>> GetAllPromptsAsync(UserResponse user)
+    public async Task<List<Prompt>> GetAllPromptsAsync(User user)
     {
         List<Prompt> prompts = await db.Prompts
             .Where(p => p.UserId == user.Id)
             .ToListAsync();
 
-        return [.. prompts.Select(p => new PromptResponse(p))];
+        return prompts;
     }
 
-    public async Task<List<PromptResponse>> GetPromptsAsync(UserResponse user, List<int> promptIds)
+    public async Task<List<Prompt>> GetPromptsAsync(User user, List<int> promptIds)
     {
         if (promptIds.Count != promptIds.Distinct().Count())
         {
@@ -36,19 +36,19 @@ public class PromptService(AppDbContext db) : IPromptService
             throw new InvalidPayloadException("One or more of the provided prompt IDs do not exist for this user.");
         }
 
-        return [.. prompts.Select(p => new PromptResponse(p))];
+        return prompts;
     }
 
-    public async Task<PromptResponse> GetPromptAsync(UserResponse user, int id)
+    public async Task<Prompt> GetPromptAsync(User user, int id)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Prompt not found.");
 
-        return new PromptResponse(prompt);
+        return prompt;
     }
 
-    public async Task<PromptResponse> CreatePromptAsync(UserResponse user, PromptCreateRequest body)
+    public async Task<Prompt> CreatePromptAsync(User user, PromptCreateRequest body)
     {
         if (body.Type < 0 || body.Type > 2)
         {
@@ -65,10 +65,10 @@ public class PromptService(AppDbContext db) : IPromptService
         db.Prompts.Add(prompt);
         await db.SaveChangesAsync();
 
-        return new PromptResponse(prompt);
+        return prompt;
     }
 
-    public async Task UpdatePromptAsync(UserResponse user, int id, PromptUpdateRequest body)
+    public async Task<Prompt> UpdatePromptAsync(User user, int id, PromptUpdateRequest body)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)
@@ -81,9 +81,10 @@ public class PromptService(AppDbContext db) : IPromptService
 
         db.Prompts.Update(prompt);
         await db.SaveChangesAsync();
+        return prompt;
     }
 
-    public async Task DeletePromptAsync(UserResponse user, int id)
+    public async Task DeletePromptAsync(User user, int id)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)

@@ -2,8 +2,8 @@ using MemoAtlas_Backend_ASP.Models.Entities;
 
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class UserResponse(User user)
+public class UserResponse
 {
-    public int Id { get; set; } = user.Id;
-    public string Email { get; set; } = user.Email;
+    public required int Id { get; set; }
+    public required string Email { get; set; }
 }
