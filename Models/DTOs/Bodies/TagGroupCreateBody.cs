@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs
-{
-    public class TagGroupCreateBody
-    {
-        [Required, MinLength(1, ErrorMessage = "Name cannot be empty.")]
-        public required string Name { get; set; }
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
 
-        [Required]
-        public required string Color { get; set; }
-    }
+public class TagGroupCreateBody
+{
+    [Required, MinLength(1, ErrorMessage = "Name cannot be empty.")]
+    public required string Name { get; set; }
+
+    [Required]
+    public required string Color { get; set; }
 }

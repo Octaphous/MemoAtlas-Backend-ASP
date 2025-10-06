@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+
+public class PromptUpdateBody
 {
-    public class PromptUpdateBody
-    {
-        [MinLength(1, ErrorMessage = "Question cannot be empty.")]
-        public string? Question { get; set; }
-    }
+    [MinLength(1, ErrorMessage = "Question cannot be empty.")]
+    public string? Question { get; set; }
 }

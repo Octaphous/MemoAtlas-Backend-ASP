@@ -1,7 +1,6 @@
 using System.Net;
 
-namespace MemoAtlas_Backend_ASP.Exceptions
-{
-    public class InvalidPayloadException(string message = "Invalid payload.") : StatusCodeException(message, HttpStatusCode.BadRequest)
-    { }
-}
+namespace MemoAtlas_Backend_ASP.Exceptions;
+
+public class InvalidPayloadException(string message = "Invalid payload.") : StatusCodeException(message, HttpStatusCode.BadRequest)
+{ }

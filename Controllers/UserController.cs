@@ -4,18 +4,17 @@ using MemoAtlas_Backend_ASP.Services;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MemoAtlas_Backend_ASP.Controllers
+namespace MemoAtlas_Backend_ASP.Controllers;
+
+[Route("api/[controller]")]
+[AuthRequired]
+[ApiController]
+public class UserController(IUserContext userContext) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [AuthRequired]
-    [ApiController]
-    public class UserController(IUserContext userContext) : ControllerBase
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
     {
-        [HttpGet("me")]
-        public IActionResult GetCurrentUser()
-        {
-            UserData user = userContext.CurrentUser!;
-            return Ok(user);
-        }
+        UserData user = userContext.CurrentUser!;
+        return Ok(user);
     }
 }

@@ -1,8 +1,7 @@
-namespace MemoAtlas_Backend_ASP.Models
+namespace MemoAtlas_Backend_ASP.Models;
+
+public enum PromptType
 {
-    public enum PromptType
-    {
-        Number,
-        Text
-    }
+    Number,
+    Text
 }
