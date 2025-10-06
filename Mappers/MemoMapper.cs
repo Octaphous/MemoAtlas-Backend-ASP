@@ -19,7 +19,20 @@ public static class MemoMapper
         Id = memo.Id,
         Title = memo.Title,
         Date = memo.Date,
-        Tags = memo.Tags.Select(TagMapper.ToDetailedResponse).ToList(),
+        TagGroups = memo.Tags
+            .GroupBy(tag => tag.TagGroup)
+            .Select(group => new TagGroupResponse
+            {
+                Id = group.Key.Id,
+                Name = group.Key.Name,
+                Color = group.Key.Color,
+                Tags = group.Select(tag => new TagSummaryResponse
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    Description = tag.Description
+                }).ToList()
+            }).ToList(),
         PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToResponse).ToList()
     };
 }
