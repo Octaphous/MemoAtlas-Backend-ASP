@@ -57,7 +57,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         List<PromptAnswer> promptAnswers = [];
         if (body.PromptAnswers != null)
         {
-            promptAnswers = await CreatePromptAnswers(user, body.PromptAnswers);
+            promptAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers);
         }
 
         Memo memo = new()
@@ -92,7 +92,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
 
         if (body.PromptAnswers != null)
         {
-            List<PromptAnswer> promptAnswers = await CreatePromptAnswers(user, body.PromptAnswers);
+            List<PromptAnswer> promptAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers);
             memo.PromptAnswers = promptAnswers;
         }
 
@@ -107,7 +107,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         await db.SaveChangesAsync();
     }
 
-    private void VerifyPromptValues(List<PromptAnswerRequest> promptAnswers, List<Prompt> prompts)
+    private void VerifyPromptAnswers(List<PromptAnswerRequest> promptAnswers, List<Prompt> prompts)
     {
         foreach (PromptAnswerRequest pv in promptAnswers)
         {
@@ -124,12 +124,12 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         }
     }
 
-    private async Task<List<PromptAnswer>> CreatePromptAnswers(User user, List<PromptAnswerRequest> promptAnswers)
+    private async Task<List<PromptAnswer>> CreatePromptAnswersAsync(User user, List<PromptAnswerRequest> promptAnswers)
     {
         List<int> promptIds = [.. promptAnswers.Select(pv => pv.PromptId)];
         List<Prompt> prompts = await promptService.GetPromptsAsync(user, promptIds);
 
-        VerifyPromptValues(promptAnswers, prompts);
+        VerifyPromptAnswers(promptAnswers, prompts);
 
         return [.. promptAnswers.Select(pv =>
         {
