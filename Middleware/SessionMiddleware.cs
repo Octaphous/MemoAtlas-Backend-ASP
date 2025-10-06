@@ -3,23 +3,19 @@ using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
+using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend_ASP.Middleware;
 
 public class SessionMiddleware(RequestDelegate next)
 {
-    public async Task Invoke(HttpContext context, AppDbContext dbContext)
+    public async Task Invoke(HttpContext context, ISessionService sessionService)
     {
         if (context.Request.Cookies.TryGetValue(AppConstants.AuthTokenName, out string? token))
         {
-            Session? session = await dbContext.Sessions.Include(s => s.User)
-                                                      .FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow);
-
-            if (session != null)
-            {
-                context.Items["User"] = session.User;
-            }
+            Session session = await sessionService.GetSessionByTokenAsync(token);
+            context.Items["User"] = session.User;
         }
 
         await next(context);

@@ -13,6 +13,15 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class SessionService(AppDbContext db) : ISessionService
 {
+    public async Task<Session> GetSessionByTokenAsync(string token)
+    {
+        Session session = await db.Sessions.Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow)
+            ?? throw new InvalidResourceException("Session not found.");
+
+        return session;
+    }
+
     public async Task<Session> CreateSessionAsync(User user)
     {
         Session session = new()
