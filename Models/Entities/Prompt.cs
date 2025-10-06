@@ -2,12 +2,6 @@
 
 namespace MemoAtlas_Backend_ASP.Models.Entities
 {
-    public enum PromptType
-    {
-        Number,
-        Text
-    }
-
     public class Prompt
     {
         public int Id { get; set; }

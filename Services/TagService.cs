@@ -20,6 +20,16 @@ public class TagService(AppDbContext db) : ITagService
         return [.. tags.Select(t => new TagData(t))];
     }
 
+    public async Task<List<TagData>> GetTagsAsync(UserData user, List<int> tagIds)
+    {
+        List<Tag> tags = await db.Tags
+            .Where(t => t.TagGroup.UserId == user.Id && tagIds.Contains(t.Id))
+            .Include(t => t.TagGroup)
+            .ToListAsync();
+
+        return [.. tags.Select(t => new TagData(t))];
+    }
+
     public async Task<TagData> GetTagAsync(UserData user, int id)
     {
         Tag tag = await db.Tags

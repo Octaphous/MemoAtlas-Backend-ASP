@@ -1,10 +1,10 @@
 meta {
-  name: delete memo
+  name: get memo
   type: http
-  seq: 5
+  seq: 2
 }
 
-delete {
+get {
   url: http://localhost:5240/api/memos/:id
   body: none
   auth: inherit

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
@@ -8,18 +9,20 @@ namespace MemoAtlas_Backend_ASP.Controllers
     [Route("api/memos")]
     [AuthRequired]
     [ApiController]
-    public class MemoController(IMemoService memoService) : ControllerBase
+    public class MemoController(IUserContext auth, IMemoService memoService) : ControllerBase
     {
         [HttpGet]
-        public IActionResult GetAllMemos()
+        public async Task<IActionResult> GetAllMemos()
         {
-            return Ok();
+            List<SummarizedMemoData> memos = await memoService.GetAllMemosAsync(auth.GetRequiredUser());
+            return Ok(memos);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetMemo(int id)
+        public async Task<IActionResult> GetMemo(int id)
         {
-            return Ok();
+            MemoData memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
+            return Ok(memo);
         }
 
         [HttpPost]
@@ -27,21 +30,23 @@ namespace MemoAtlas_Backend_ASP.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            MemoData createdMemo = await memoService.CreateMemoAsync(body);
-
+            MemoData createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
             return Ok(createdMemo);
         }
 
         [HttpPatch("{id}")]
-        public IActionResult UpdateMemo(int id, [FromBody] MemoUpdateBody memo)
+        public async Task<IActionResult> UpdateMemo(int id, [FromBody] MemoUpdateBody memo)
         {
-            return Ok();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            await memoService.UpdateMemoAsync(auth.GetRequiredUser(), id, memo);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMemo(int id)
         {
-            await memoService.DeleteMemoAsync(id);
+            await memoService.DeleteMemoAsync(auth.GetRequiredUser(), id);
             return NoContent();
         }
     }

@@ -32,6 +32,7 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>

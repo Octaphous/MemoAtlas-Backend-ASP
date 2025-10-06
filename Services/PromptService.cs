@@ -1,5 +1,6 @@
 using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Exceptions;
+using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
@@ -13,6 +14,15 @@ public class PromptService(AppDbContext db) : IPromptService
     {
         List<Prompt> prompts = await db.Prompts
             .Where(p => p.UserId == user.Id)
+            .ToListAsync();
+
+        return [.. prompts.Select(p => new PromptData(p))];
+    }
+
+    public async Task<List<PromptData>> GetPromptsAsync(UserData user, List<int> promptIds)
+    {
+        List<Prompt> prompts = await db.Prompts
+            .Where(p => p.UserId == user.Id && promptIds.Contains(p.Id))
             .ToListAsync();
 
         return [.. prompts.Select(p => new PromptData(p))];

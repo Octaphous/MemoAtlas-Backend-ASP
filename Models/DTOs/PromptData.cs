@@ -6,6 +6,6 @@ namespace MemoAtlas_Backend_ASP.Models.DTOs
     {
         public int Id { get; set; } = prompt.Id;
         public string Question { get; set; } = prompt.Question;
-        public int Type { get; set; } = (int)prompt.Type;
+        public PromptType Type { get; set; } = prompt.Type;
     }
 }

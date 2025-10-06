@@ -5,8 +5,10 @@ namespace MemoAtlas_Backend_ASP.Services.Interfaces
 {
     public interface IMemoService
     {
-        Task<List<MemoData>> GetAllMemosAsync();
-        Task<MemoData> CreateMemoAsync(MemoCreateBody body);
-        Task DeleteMemoAsync(int id);
+        Task<List<SummarizedMemoData>> GetAllMemosAsync(UserData user);
+        Task<MemoData> GetMemoAsync(UserData user, int id);
+        Task<MemoData> CreateMemoAsync(UserData user, MemoCreateBody body);
+        Task UpdateMemoAsync(UserData user, int id, MemoUpdateBody body);
+        Task DeleteMemoAsync(UserData user, int id);
     }
 }

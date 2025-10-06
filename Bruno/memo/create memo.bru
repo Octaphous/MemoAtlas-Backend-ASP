@@ -1,7 +1,7 @@
 meta {
   name: create memo
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
@@ -12,8 +12,19 @@ post {
 
 body:json {
   {
-    "date": "2025-10-04",
-    "title": "hej"
+    "date": "2025-10-09",
+    "title": "en annan dag",
+    "tags": [1,2],
+    "prompts": [
+      {
+        "promptId": 1,
+        "value": "riktigt bra"
+      },
+      {
+        "promptId": 2,
+        "value": 1
+      }
+    ]
   }
 }
 

@@ -1,0 +1,32 @@
+meta {
+  name: update memo
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5240/api/memos/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "title": "en femma",
+    "tags": [3],
+    "prompts": [
+      {
+        "promptId": 1,
+        "value": "trallallala"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+}

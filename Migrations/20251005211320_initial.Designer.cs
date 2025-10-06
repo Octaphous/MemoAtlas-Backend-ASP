@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251005180546_initial")]
+    [Migration("20251005211320_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -27,6 +27,10 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
