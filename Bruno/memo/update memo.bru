@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: http://localhost:5240/api/memos/:id
+  url: {{host}}/api/memos/:id
   body: json
   auth: inherit
 }
@@ -19,7 +19,7 @@ body:json {
     "title": "en femma",
     "promptAnswers": [
       {
-        "promptId": 1,
+        "promptId": 2,
         "value": 1000
       }
     ]
