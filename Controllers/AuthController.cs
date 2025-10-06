@@ -12,24 +12,25 @@ namespace MemoAtlas_Backend_ASP.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IUserService userService, ISessionService sessionService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] AuthRegisterRequest body)
+    public async Task<IActionResult> Register([FromBody] UserCreateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        User user = await authService.RegisterUserAsync(body);
+        User user = await userService.CreateUserAsync(body);
 
         return Ok(UserMapper.ToResponse(user));
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] AuthLoginRequest body)
+    public async Task<IActionResult> Login([FromBody] UserLoginRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        Session session = await authService.LoginUserAsync(body);
+        User user = await userService.GetUserFromCredentialsAsync(body);
+        Session session = await sessionService.CreateSessionAsync(user);
 
         Response.Cookies.Append(AppConstants.AuthTokenName, session.Token, new CookieOptions
         {
@@ -48,7 +49,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         if (Request.Cookies.TryGetValue(AppConstants.AuthTokenName, out string? token))
         {
             Response.Cookies.Delete(AppConstants.AuthTokenName);
-            await authService.LogoutUserAsync(token);
+            await sessionService.DeleteSessionAsync(token);
         }
 
         return Ok();

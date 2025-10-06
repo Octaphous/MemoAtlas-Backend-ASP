@@ -1,12 +1,12 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class AuthLoginRequest
+public class UserCreateRequest
 {
-    [Required]
+    [Required, EmailAddress]
     public required string Email { get; set; }
 
-    [Required]
+    [Required, MinLength(6)]
     public required string Password { get; set; }
 }
