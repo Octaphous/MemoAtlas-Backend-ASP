@@ -1,4 +1,5 @@
 using MemoAtlas_Backend_ASP.Filters;
+using MemoAtlas_Backend_ASP.Mappers;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
@@ -17,14 +18,14 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     public async Task<IActionResult> GetAllTagGroups()
     {
         List<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
-        return Ok(tagGroups.Select(TagGroupMapper.ToResponse).ToList());
+        return Ok(tagGroups.Select(TagGroupMapper.ToTagGroupWithTagsDTO).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTagGroup(int id)
     {
         TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
-        return Ok(TagGroupMapper.ToResponse(tagGroup));
+        return Ok(TagGroupMapper.ToTagGroupWithTagsDTO(tagGroup));
     }
 
     [HttpPost]
@@ -33,7 +34,7 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         TagGroup tagGroup = await tagGroupService.CreateTagGroupAsync(auth.GetRequiredUser(), body);
-        return Ok(TagGroupMapper.ToResponse(tagGroup));
+        return Ok(TagGroupMapper.ToTagGroupWithTagsDTO(tagGroup));
     }
 
     [HttpPatch("{id}")]
@@ -42,7 +43,7 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         TagGroup tagGroup = await tagGroupService.UpdateTagGroupAsync(auth.GetRequiredUser(), id, body);
-        return Ok(TagGroupMapper.ToResponse(tagGroup));
+        return Ok(TagGroupMapper.ToTagGroupWithTagsDTO(tagGroup));
     }
 
     [HttpDelete("{id}")]

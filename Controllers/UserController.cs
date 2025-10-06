@@ -14,6 +14,6 @@ public class UserController(IUserContext userContext) : ControllerBase
     public IActionResult GetCurrentUser()
     {
         User user = userContext.CurrentUser!;
-        return Ok(UserMapper.ToResponse(user));
+        return Ok(UserMapper.ToDTO(user));
     }
 }

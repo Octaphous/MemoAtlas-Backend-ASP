@@ -7,7 +7,7 @@ namespace MemoAtlas_Backend_ASP.Services.Interfaces;
 
 public interface IMemoService
 {
-    Task<List<MemoSummarizedResponse>> ListAllMemosAsync(User user);
+    Task<List<MemoWithCountsDTO>> ListAllMemosAsync(User user);
     Task<Memo> GetMemoAsync(User user, int id);
     Task<Memo> CreateMemoAsync(User user, MemoCreateRequest body);
     Task<Memo> UpdateMemoAsync(User user, int id, MemoUpdateRequest body);

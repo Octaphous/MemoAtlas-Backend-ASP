@@ -3,7 +3,7 @@ using MemoAtlas_Backend_ASP.Models.Entities;
 
 public static class UserMapper
 {
-    public static UserResponse ToResponse(User user) => new()
+    public static UserDTO ToDTO(User user) => new()
     {
         Id = user.Id,
         Email = user.Email

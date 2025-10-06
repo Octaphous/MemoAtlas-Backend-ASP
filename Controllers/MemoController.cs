@@ -18,7 +18,7 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     [HttpGet]
     public async Task<IActionResult> GetAllMemos()
     {
-        List<MemoSummarizedResponse> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
+        List<MemoWithCountsDTO> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
         return Ok(memos);
     }
 
@@ -26,7 +26,7 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     public async Task<IActionResult> GetMemo(int id)
     {
         Memo memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
-        return Ok(MemoMapper.ToResponse(memo));
+        return Ok(MemoMapper.ToMemoWithTagsAndAnswersDTO(memo));
     }
 
     [HttpPost]
@@ -35,7 +35,7 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Memo createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
-        return Ok(MemoMapper.ToResponse(createdMemo));
+        return Ok(MemoMapper.ToMemoWithTagsAndAnswersDTO(createdMemo));
     }
 
     [HttpPatch("{id}")]
@@ -44,7 +44,7 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Memo updatedMemo = await memoService.UpdateMemoAsync(auth.GetRequiredUser(), id, memo);
-        return Ok(MemoMapper.ToResponse(updatedMemo));
+        return Ok(MemoMapper.ToMemoWithTagsAndAnswersDTO(updatedMemo));
     }
 
     [HttpDelete("{id}")]

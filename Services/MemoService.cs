@@ -11,10 +11,10 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class MemoService(AppDbContext db, ITagService tagService, IPromptService promptService) : IMemoService
 {
-    public async Task<List<MemoSummarizedResponse>> ListAllMemosAsync(User user)
+    public async Task<List<MemoWithCountsDTO>> ListAllMemosAsync(User user)
     {
-        List<MemoSummarizedResponse> memos = await db.Memos.Where(m => m.UserId == user.Id)
-            .Select(m => new MemoSummarizedResponse
+        List<MemoWithCountsDTO> memos = await db.Memos.Where(m => m.UserId == user.Id)
+            .Select(m => new MemoWithCountsDTO
             {
                 Id = m.Id,
                 Title = m.Title,

@@ -47,6 +47,7 @@ public class TagService(AppDbContext db) : ITagService
         Tag tag = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
             .Include(t => t.TagGroup)
+            .Include(t => t.Memos)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag not found.");
 
         return tag;
@@ -67,7 +68,6 @@ public class TagService(AppDbContext db) : ITagService
 
         db.Tags.Add(tag);
         await db.SaveChangesAsync();
-
         await db.Entry(tag).Reference(t => t.TagGroup).LoadAsync();
 
         return tag;
@@ -78,6 +78,7 @@ public class TagService(AppDbContext db) : ITagService
         Tag tag = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
             .Include(t => t.TagGroup)
+            .Include(t => t.Memos)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag not found.");
 
         if (body.Name != null)

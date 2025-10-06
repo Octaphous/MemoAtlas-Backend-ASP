@@ -21,7 +21,7 @@ public class AuthController(IUserService userService, ISessionService sessionSer
 
         User user = await userService.CreateUserAsync(body);
 
-        return Ok(UserMapper.ToResponse(user));
+        return Ok(UserMapper.ToDTO(user));
     }
 
     [HttpPost("login")]

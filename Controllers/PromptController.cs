@@ -1,4 +1,5 @@
 using MemoAtlas_Backend_ASP.Filters;
+using MemoAtlas_Backend_ASP.Mappers;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
@@ -17,14 +18,14 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     public async Task<IActionResult> GetAllPrompts()
     {
         List<Prompt> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
-        return Ok(prompts.Select(PromptMapper.ToResponse).ToList());
+        return Ok(prompts.Select(PromptMapper.ToDTO).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPrompt(int id)
     {
         Prompt prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
-        return Ok(PromptMapper.ToResponse(prompt));
+        return Ok(PromptMapper.ToDTO(prompt));
     }
 
     [HttpPost]
@@ -33,7 +34,7 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Prompt prompt = await promptService.CreatePromptAsync(auth.GetRequiredUser(), body);
-        return Ok(PromptMapper.ToResponse(prompt));
+        return Ok(PromptMapper.ToDTO(prompt));
     }
 
     [HttpPatch("{id}")]
@@ -42,7 +43,7 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Prompt prompt = await promptService.UpdatePromptAsync(auth.GetRequiredUser(), id, body);
-        return Ok(PromptMapper.ToResponse(prompt));
+        return Ok(PromptMapper.ToDTO(prompt));
     }
 
     [HttpDelete("{id}")]

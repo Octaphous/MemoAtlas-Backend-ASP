@@ -1,19 +1,29 @@
+using MemoAtlas.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 
+namespace MemoAtlas_Backend_ASP.Mappers;
+
 public static class TagMapper
 {
-    public static TagDetailedResponse ToDetailedResponse(Tag tg) => new()
+    public static TagDTO ToDTO(Tag tg) => new()
     {
         Id = tg.Id,
         Name = tg.Name,
         Description = tg.Description,
         GroupId = tg.TagGroupId,
-        GroupName = tg.TagGroup.Name,
-        GroupColor = tg.TagGroup.Color,
     };
 
-    public static TagSummaryResponse ToSummarizedResponse(Tag tg) => new()
+    public static TagWithGroupAndMemosDTO ToTagWithGroupAndMemosDTO(Tag tg) => new()
+    {
+        Id = tg.Id,
+        Name = tg.Name,
+        Description = tg.Description,
+        Group = TagGroupMapper.ToDTO(tg.TagGroup),
+        Memos = tg.Memos.Select(MemoMapper.ToDTO).ToList(),
+    };
+
+    public static TagWithoutGroupDataDTO ToTagWithoutGroupDataDTO(Tag tg) => new()
     {
         Id = tg.Id,
         Name = tg.Name,

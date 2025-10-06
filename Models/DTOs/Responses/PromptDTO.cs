@@ -2,7 +2,7 @@ using MemoAtlas_Backend_ASP.Models.Entities;
 
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class PromptResponse
+public class PromptDTO
 {
     public required int Id { get; set; }
     public required string Question { get; set; }

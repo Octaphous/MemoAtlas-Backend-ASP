@@ -1,4 +1,5 @@
 using MemoAtlas_Backend_ASP.Filters;
+using MemoAtlas_Backend_ASP.Mappers;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
@@ -17,14 +18,14 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     public async Task<IActionResult> GetAllTags()
     {
         List<Tag> tags = await tagService.GetAllTagsAsync(auth.GetRequiredUser());
-        return Ok(tags.Select(TagMapper.ToDetailedResponse).ToList());
+        return Ok(tags.Select(TagMapper.ToDTO).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTag(int id)
     {
         Tag tag = await tagService.GetTagAsync(auth.GetRequiredUser(), id);
-        return Ok(TagMapper.ToDetailedResponse(tag));
+        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
     }
 
     [HttpPost]
@@ -33,7 +34,7 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Tag tag = await tagService.CreateTagAsync(auth.GetRequiredUser(), body);
-        return Ok(TagMapper.ToDetailedResponse(tag));
+        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
     }
 
     [HttpPatch("{id}")]
@@ -42,9 +43,8 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Tag tag = await tagService.UpdateTagAsync(auth.GetRequiredUser(), id, body);
-        return Ok(TagMapper.ToDetailedResponse(tag));
+        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
     }
-
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTag(int id)

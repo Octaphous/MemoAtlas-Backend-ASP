@@ -1,10 +1,10 @@
-using MemoAtlas_Backend_ASP.Models.Entities;
-
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class TagSummaryResponse
+public class TagWithGroupAndMemosDTO
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
+    public required TagGroupDTO Group { get; set; }
+    public required List<MemoDTO> Memos { get; set; }
 }

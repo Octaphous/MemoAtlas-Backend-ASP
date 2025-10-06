@@ -2,9 +2,11 @@ using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 
+namespace MemoAtlas_Backend_ASP.Mappers;
+
 public static class PromptAnswerMapper
 {
-    public static PromptAnswerResponse ToResponse(PromptAnswer pa) => new()
+    public static PromptAnswerDTO ToDTO(PromptAnswer pa) => new()
     {
         PromptId = pa.Prompt.Id,
         Type = pa.Prompt.Type,
