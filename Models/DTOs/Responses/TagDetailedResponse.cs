@@ -1,8 +1,8 @@
 using MemoAtlas_Backend_ASP.Models.Entities;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class TagData(Tag tag)
+public class TagDetailedResponse(Tag tag)
 {
     public int Id { get; set; } = tag.Id;
     public string Name { get; set; } = tag.Name;

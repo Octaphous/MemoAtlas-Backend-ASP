@@ -1,8 +1,8 @@
 using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models;
-using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +11,10 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class MemoService(AppDbContext db, ITagService tagService, IPromptService promptService) : IMemoService
 {
-    public async Task<List<SummarizedMemoData>> ListAllMemosAsync(UserData user)
+    public async Task<List<MemoSummarizedResponse>> ListAllMemosAsync(UserResponse user)
     {
-        List<SummarizedMemoData> memos = await db.Memos.Where(m => m.UserId == user.Id)
-            .Select(m => new SummarizedMemoData
+        List<MemoSummarizedResponse> memos = await db.Memos.Where(m => m.UserId == user.Id)
+            .Select(m => new MemoSummarizedResponse
             {
                 Id = m.Id,
                 Title = m.Title,
@@ -27,19 +27,20 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         return memos;
     }
 
-    public async Task<MemoData> GetMemoAsync(UserData user, int memoId)
+    public async Task<MemoResponse> GetMemoAsync(UserResponse user, int memoId)
     {
         Memo memo = await db.Memos
             .Where(m => m.UserId == user.Id && m.Id == memoId)
             .Include(m => m.Tags)
+                .ThenInclude(t => t.TagGroup)
             .Include(m => m.PromptAnswers)
                 .ThenInclude(pa => pa.Prompt)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException();
 
-        return new MemoData(memo);
+        return new MemoResponse(memo);
     }
 
-    public async Task<MemoData> CreateMemoAsync(UserData user, MemoCreateBody body)
+    public async Task<MemoResponse> CreateMemoAsync(UserResponse user, MemoCreateRequest body)
     {
         bool dateExists = await db.Memos.AnyAsync(m => m.UserId == user.Id && m.Date == body.Date);
         if (dateExists)
@@ -50,14 +51,14 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         List<Tag> tags = [];
         if (body.Tags != null)
         {
-            List<TagData> tagData = await tagService.GetTagsAsync(user, body.Tags);
-            tags = [.. db.Tags.Where(t => body.Tags.Contains(t.Id))];
+            List<TagDetailedResponse> tagData = await tagService.GetTagsAsync(user, body.Tags);
+            tags = db.Tags.Where(t => body.Tags.Contains(t.Id)).ToList();
         }
 
         List<PromptAnswer> promptAnswers = [];
-        if (body.Prompts != null)
+        if (body.PromptAnswers != null)
         {
-            promptAnswers = await CreatePromptAnswers(user, body.Prompts);
+            promptAnswers = await CreatePromptAnswers(user, body.PromptAnswers);
         }
 
         Memo memo = new()
@@ -72,10 +73,10 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         db.Memos.Add(memo);
         await db.SaveChangesAsync();
 
-        return new MemoData(memo);
+        return new MemoResponse(memo);
     }
 
-    public async Task UpdateMemoAsync(UserData user, int memoId, MemoUpdateBody body)
+    public async Task UpdateMemoAsync(UserResponse user, int memoId, MemoUpdateRequest body)
     {
         Memo memo = await db.Memos
             .Where(m => m.UserId == user.Id && m.Id == memoId)
@@ -91,32 +92,32 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
 
         if (body.Tags != null)
         {
-            List<TagData> tagData = await tagService.GetTagsAsync(user, body.Tags);
+            List<TagDetailedResponse> tagData = await tagService.GetTagsAsync(user, body.Tags);
             List<Tag> tags = [.. db.Tags.Where(t => body.Tags.Contains(t.Id))];
             memo.Tags = tags;
         }
 
-        if (body.Prompts != null)
+        if (body.PromptAnswers != null)
         {
-            List<PromptAnswer> promptAnswers = await CreatePromptAnswers(user, body.Prompts);
+            List<PromptAnswer> promptAnswers = await CreatePromptAnswers(user, body.PromptAnswers);
             memo.PromptAnswers = promptAnswers;
         }
 
         await db.SaveChangesAsync();
     }
 
-    public async Task DeleteMemoAsync(UserData user, int memoId)
+    public async Task DeleteMemoAsync(UserResponse user, int memoId)
     {
         Memo memo = await db.Memos.FirstOrDefaultAsync(m => m.Id == memoId && m.UserId == user.Id) ?? throw new InvalidResourceException();
         db.Memos.Remove(memo);
         await db.SaveChangesAsync();
     }
 
-    private void VerifyPromptValues(UserData user, List<PromptValueBody> promptValues, List<PromptData> prompts)
+    private void VerifyPromptValues(List<PromptAnswerRequest> promptAnswers, List<PromptResponse> prompts)
     {
-        foreach (PromptValueBody pv in promptValues)
+        foreach (PromptAnswerRequest pv in promptAnswers)
         {
-            PromptData prompt = prompts.First(p => p.Id == pv.PromptId);
+            PromptResponse prompt = prompts.First(p => p.Id == pv.PromptId);
 
             if (prompt.Type == PromptType.Text && pv.Value is not string)
             {
@@ -129,16 +130,16 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         }
     }
 
-    private async Task<List<PromptAnswer>> CreatePromptAnswers(UserData user, List<PromptValueBody> promptValues)
+    private async Task<List<PromptAnswer>> CreatePromptAnswers(UserResponse user, List<PromptAnswerRequest> promptAnswers)
     {
-        List<int> promptIds = [.. promptValues.Select(pv => pv.PromptId)];
-        List<PromptData> prompts = await promptService.GetPromptsAsync(user, promptIds);
+        List<int> promptIds = [.. promptAnswers.Select(pv => pv.PromptId)];
+        List<PromptResponse> prompts = await promptService.GetPromptsAsync(user, promptIds);
 
-        VerifyPromptValues(user, promptValues, prompts);
+        VerifyPromptValues(promptAnswers, prompts);
 
-        return [.. promptValues.Select(pv =>
+        return [.. promptAnswers.Select(pv =>
         {
-            PromptData prompt = prompts.First(p => p.Id == pv.PromptId);
+            PromptResponse prompt = prompts.First(p => p.Id == pv.PromptId);
 
             return new PromptAnswer
             {

@@ -1,6 +1,8 @@
 using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
+using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,28 +16,28 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     [HttpGet]
     public async Task<IActionResult> GetAllTagGroups()
     {
-        List<TagGroupData> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
+        List<TagGroupResponse> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
         return Ok(tagGroups);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTagGroup(int id)
     {
-        TagGroupData tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
+        TagGroupResponse tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
         return Ok(tagGroup);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTagGroup([FromBody] TagGroupCreateBody body)
+    public async Task<IActionResult> CreateTagGroup([FromBody] TagGroupCreateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        TagGroupData tagGroup = await tagGroupService.CreateTagGroupAsync(auth.GetRequiredUser(), body);
+        TagGroupResponse tagGroup = await tagGroupService.CreateTagGroupAsync(auth.GetRequiredUser(), body);
         return Ok(tagGroup);
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateTagGroup(int id, [FromBody] TagGroupUpdateBody body)
+    public async Task<IActionResult> UpdateTagGroup(int id, [FromBody] TagGroupUpdateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

@@ -1,14 +1,15 @@
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 
 namespace MemoAtlas_Backend_ASP.Services.Interfaces;
 
 public interface IMemoService
 {
-    Task<List<SummarizedMemoData>> ListAllMemosAsync(UserData user);
-    Task<MemoData> GetMemoAsync(UserData user, int id);
-    Task<MemoData> CreateMemoAsync(UserData user, MemoCreateBody body);
-    Task UpdateMemoAsync(UserData user, int id, MemoUpdateBody body);
-    Task DeleteMemoAsync(UserData user, int id);
+    Task<List<MemoSummarizedResponse>> ListAllMemosAsync(UserResponse user);
+    Task<MemoResponse> GetMemoAsync(UserResponse user, int id);
+    Task<MemoResponse> CreateMemoAsync(UserResponse user, MemoCreateRequest body);
+    Task UpdateMemoAsync(UserResponse user, int id, MemoUpdateRequest body);
+    Task DeleteMemoAsync(UserResponse user, int id);
 }

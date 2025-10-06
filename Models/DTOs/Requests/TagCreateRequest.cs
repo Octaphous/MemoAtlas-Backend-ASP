@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class TagCreateBody
+public class TagCreateRequest
 {
     [Required, MinLength(1, ErrorMessage = "Name cannot be empty.")]
     public required string Name { get; set; }

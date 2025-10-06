@@ -2,7 +2,8 @@ using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,17 +12,17 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class TagService(AppDbContext db) : ITagService
 {
-    public async Task<List<TagData>> GetAllTagsAsync(UserData user)
+    public async Task<List<TagDetailedResponse>> GetAllTagsAsync(UserResponse user)
     {
         List<Tag> tags = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id)
             .Include(t => t.TagGroup)
             .ToListAsync();
 
-        return [.. tags.Select(t => new TagData(t))];
+        return [.. tags.Select(t => new TagDetailedResponse(t))];
     }
 
-    public async Task<List<TagData>> GetTagsAsync(UserData user, List<int> tagIds)
+    public async Task<List<TagDetailedResponse>> GetTagsAsync(UserResponse user, List<int> tagIds)
     {
         if (tagIds.Count != tagIds.Distinct().Count())
         {
@@ -38,20 +39,20 @@ public class TagService(AppDbContext db) : ITagService
             throw new InvalidPayloadException("One or more of the provided tag IDs do not exist for this user.");
         }
 
-        return [.. tags.Select(t => new TagData(t))];
+        return [.. tags.Select(t => new TagDetailedResponse(t))];
     }
 
-    public async Task<TagData> GetTagAsync(UserData user, int id)
+    public async Task<TagDetailedResponse> GetTagAsync(UserResponse user, int id)
     {
         Tag tag = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
             .Include(t => t.TagGroup)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag not found.");
 
-        return new TagData(tag);
+        return new TagDetailedResponse(tag);
     }
 
-    public async Task<TagData> CreateTagAsync(UserData user, TagCreateBody body)
+    public async Task<TagDetailedResponse> CreateTagAsync(UserResponse user, TagCreateRequest body)
     {
         TagGroup tagGroup = await db.TagGroups
             .Where(tg => tg.UserId == user.Id && tg.Id == body.GroupId)
@@ -69,10 +70,10 @@ public class TagService(AppDbContext db) : ITagService
 
         await db.Entry(tag).Reference(t => t.TagGroup).LoadAsync();
 
-        return new TagData(tag);
+        return new TagDetailedResponse(tag);
     }
 
-    public async Task UpdateTagAsync(UserData user, int id, TagUpdateBody body)
+    public async Task UpdateTagAsync(UserResponse user, int id, TagUpdateRequest body)
     {
         Tag tag = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
@@ -90,7 +91,7 @@ public class TagService(AppDbContext db) : ITagService
         await db.SaveChangesAsync();
     }
 
-    public async Task DeleteTagAsync(UserData user, int id)
+    public async Task DeleteTagAsync(UserResponse user, int id)
     {
         Tag tag = await db.Tags
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)

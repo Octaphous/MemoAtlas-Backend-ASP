@@ -1,8 +1,8 @@
 using MemoAtlas_Backend_ASP.Models.Entities;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class PromptData(Prompt prompt)
+public class PromptResponse(Prompt prompt)
 {
     public int Id { get; set; } = prompt.Id;
     public string Question { get; set; } = prompt.Question;

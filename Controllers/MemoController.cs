@@ -1,7 +1,8 @@
 using System.Text.Json;
 using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,28 +16,28 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     [HttpGet]
     public async Task<IActionResult> GetAllMemos()
     {
-        List<SummarizedMemoData> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
+        List<MemoSummarizedResponse> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
         return Ok(memos);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMemo(int id)
     {
-        MemoData memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
+        MemoResponse memo = await memoService.GetMemoAsync(auth.GetRequiredUser(), id);
         return Ok(memo);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMemo([FromBody] MemoCreateBody body)
+    public async Task<IActionResult> CreateMemo([FromBody] MemoCreateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        MemoData createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
+        MemoResponse createdMemo = await memoService.CreateMemoAsync(auth.GetRequiredUser(), body);
         return Ok(createdMemo);
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateMemo(int id, [FromBody] MemoUpdateBody memo)
+    public async Task<IActionResult> UpdateMemo(int id, [FromBody] MemoUpdateRequest memo)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

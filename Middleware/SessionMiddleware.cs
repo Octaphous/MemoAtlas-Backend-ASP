@@ -1,6 +1,7 @@
 using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ public class SessionMiddleware(RequestDelegate next)
 
             if (session != null)
             {
-                context.Items["User"] = new UserData(session.User);
+                context.Items["User"] = new UserResponse(session.User);
             }
         }
 

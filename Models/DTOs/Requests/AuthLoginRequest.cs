@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class AuthLoginBody
+public class AuthLoginRequest
 {
     [Required]
     public required string Email { get; set; }

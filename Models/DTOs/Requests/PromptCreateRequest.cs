@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class PromptCreateBody
+public class PromptCreateRequest
 {
     [Required, MinLength(1, ErrorMessage = "Question cannot be empty.")]
     public required string Question { get; set; }

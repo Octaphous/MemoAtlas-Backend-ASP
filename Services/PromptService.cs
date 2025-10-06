@@ -1,8 +1,8 @@
 using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models;
-using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +11,16 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class PromptService(AppDbContext db) : IPromptService
 {
-    public async Task<List<PromptData>> GetAllPromptsAsync(UserData user)
+    public async Task<List<PromptResponse>> GetAllPromptsAsync(UserResponse user)
     {
         List<Prompt> prompts = await db.Prompts
             .Where(p => p.UserId == user.Id)
             .ToListAsync();
 
-        return [.. prompts.Select(p => new PromptData(p))];
+        return [.. prompts.Select(p => new PromptResponse(p))];
     }
 
-    public async Task<List<PromptData>> GetPromptsAsync(UserData user, List<int> promptIds)
+    public async Task<List<PromptResponse>> GetPromptsAsync(UserResponse user, List<int> promptIds)
     {
         if (promptIds.Count != promptIds.Distinct().Count())
         {
@@ -36,19 +36,19 @@ public class PromptService(AppDbContext db) : IPromptService
             throw new InvalidPayloadException("One or more of the provided prompt IDs do not exist for this user.");
         }
 
-        return [.. prompts.Select(p => new PromptData(p))];
+        return [.. prompts.Select(p => new PromptResponse(p))];
     }
 
-    public async Task<PromptData> GetPromptAsync(UserData user, int id)
+    public async Task<PromptResponse> GetPromptAsync(UserResponse user, int id)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Prompt not found.");
 
-        return new PromptData(prompt);
+        return new PromptResponse(prompt);
     }
 
-    public async Task<PromptData> CreatePromptAsync(UserData user, PromptCreateBody body)
+    public async Task<PromptResponse> CreatePromptAsync(UserResponse user, PromptCreateRequest body)
     {
         if (body.Type < 0 || body.Type > 2)
         {
@@ -65,10 +65,10 @@ public class PromptService(AppDbContext db) : IPromptService
         db.Prompts.Add(prompt);
         await db.SaveChangesAsync();
 
-        return new PromptData(prompt);
+        return new PromptResponse(prompt);
     }
 
-    public async Task UpdatePromptAsync(UserData user, int id, PromptUpdateBody body)
+    public async Task UpdatePromptAsync(UserResponse user, int id, PromptUpdateRequest body)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)
@@ -83,7 +83,7 @@ public class PromptService(AppDbContext db) : IPromptService
         await db.SaveChangesAsync();
     }
 
-    public async Task DeletePromptAsync(UserData user, int id)
+    public async Task DeletePromptAsync(UserResponse user, int id)
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)

@@ -1,12 +1,13 @@
 using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 
 namespace MemoAtlas_Backend_ASP.Services;
 
 public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
-    public UserData? CurrentUser => httpContextAccessor.HttpContext?.Items["User"] as UserData;
+    public UserResponse? CurrentUser => httpContextAccessor.HttpContext?.Items["User"] as UserResponse;
 
-    public UserData GetRequiredUser() => CurrentUser ?? throw new UnauthenticatedException();
+    public UserResponse GetRequiredUser() => CurrentUser ?? throw new UnauthenticatedException();
 }

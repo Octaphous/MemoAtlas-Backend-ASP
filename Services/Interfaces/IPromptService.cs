@@ -1,14 +1,15 @@
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
 namespace MemoAtlas_Backend_ASP.Services.Interfaces;
 
 public interface IPromptService
 {
-    Task<List<PromptData>> GetAllPromptsAsync(UserData user);
-    Task<List<PromptData>> GetPromptsAsync(UserData user, List<int> promptIds);
-    Task<PromptData> GetPromptAsync(UserData user, int id);
-    Task<PromptData> CreatePromptAsync(UserData user, PromptCreateBody body);
-    Task UpdatePromptAsync(UserData user, int id, PromptUpdateBody body);
-    Task DeletePromptAsync(UserData user, int id);
+    Task<List<PromptResponse>> GetAllPromptsAsync(UserResponse user);
+    Task<List<PromptResponse>> GetPromptsAsync(UserResponse user, List<int> promptIds);
+    Task<PromptResponse> GetPromptAsync(UserResponse user, int id);
+    Task<PromptResponse> CreatePromptAsync(UserResponse user, PromptCreateRequest body);
+    Task UpdatePromptAsync(UserResponse user, int id, PromptUpdateRequest body);
+    Task DeletePromptAsync(UserResponse user, int id);
 }

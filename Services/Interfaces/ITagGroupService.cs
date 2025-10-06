@@ -1,13 +1,14 @@
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
 namespace MemoAtlas_Backend_ASP.Services.Interfaces;
 
 public interface ITagGroupService
 {
-    Task<List<TagGroupData>> GetAllTagGroupsAsync(UserData user);
-    Task<TagGroupData> GetTagGroupAsync(UserData user, int id);
-    Task<TagGroupData> CreateTagGroupAsync(UserData user, TagGroupCreateBody body);
-    Task UpdateTagGroupAsync(UserData user, int id, TagGroupUpdateBody body);
-    Task DeleteTagGroupAsync(UserData user, int id);
+    Task<List<TagGroupResponse>> GetAllTagGroupsAsync(UserResponse user);
+    Task<TagGroupResponse> GetTagGroupAsync(UserResponse user, int id);
+    Task<TagGroupResponse> CreateTagGroupAsync(UserResponse user, TagGroupCreateRequest body);
+    Task UpdateTagGroupAsync(UserResponse user, int id, TagGroupUpdateRequest body);
+    Task DeleteTagGroupAsync(UserResponse user, int id);
 }

@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class MemoUpdateBody
+public class MemoUpdateRequest
 {
     [MinLength(1, ErrorMessage = "Title cannot be empty.")]
     public string? Title { get; set; }
@@ -11,5 +11,5 @@ public class MemoUpdateBody
     public List<int>? Tags { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one prompt is required if prompts are provided.")]
-    public List<PromptValueBody>? Prompts { get; set; }
+    public List<PromptAnswerRequest>? PromptAnswers { get; set; }
 }

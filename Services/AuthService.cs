@@ -2,7 +2,8 @@ using System.Net;
 using MemoAtlas_Backend_ASP.Data;
 using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,7 @@ public class AuthService(AppDbContext context) : IAuthService
 {
     private readonly PasswordHasher<object?> passwordHasher = new();
 
-    public async Task<UserData> RegisterUserAsync(AuthRegisterBody body)
+    public async Task<UserResponse> RegisterUserAsync(AuthRegisterRequest body)
     {
         bool userExists = await context.Users.AnyAsync(u => u.Email == body.Email);
         if (userExists)
@@ -33,10 +34,10 @@ public class AuthService(AppDbContext context) : IAuthService
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return new UserData(user);
+        return new UserResponse(user);
     }
 
-    public async Task<string> LoginUserAsync(AuthLoginBody body)
+    public async Task<string> LoginUserAsync(AuthLoginRequest body)
     {
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Email == body.Email);
         if (user == null)

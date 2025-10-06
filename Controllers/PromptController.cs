@@ -1,6 +1,7 @@
 using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Models.DTOs;
-using MemoAtlas_Backend_ASP.Models.DTOs.Bodies;
+using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
+using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,28 +15,28 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     [HttpGet]
     public async Task<IActionResult> GetAllPrompts()
     {
-        List<PromptData> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
+        List<PromptResponse> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
         return Ok(prompts);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPrompt(int id)
     {
-        PromptData prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
+        PromptResponse prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
         return Ok(prompt);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePrompt([FromBody] PromptCreateBody body)
+    public async Task<IActionResult> CreatePrompt([FromBody] PromptCreateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        PromptData prompt = await promptService.CreatePromptAsync(auth.GetRequiredUser(), body);
+        PromptResponse prompt = await promptService.CreatePromptAsync(auth.GetRequiredUser(), body);
         return Ok(prompt);
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdatePrompt(int id, [FromBody] PromptUpdateBody body)
+    public async Task<IActionResult> UpdatePrompt(int id, [FromBody] PromptUpdateRequest body)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
