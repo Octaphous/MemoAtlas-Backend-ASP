@@ -93,7 +93,7 @@ public class PromptService(AppDbContext db) : IPromptService
         await db.SaveChangesAsync();
     }
 
-    public async Task<List<PromptAnswer>> CreatePromptAnswersAsync(User user, List<PromptAnswerRequest> promptAnswers)
+    public async Task<IEnumerable<PromptAnswer>> CreatePromptAnswersAsync(User user, IEnumerable<PromptAnswerRequest> promptAnswers)
     {
         HashSet<int> promptIds = promptAnswers.Select(pv => pv.PromptId).ToHashSet();
         Dictionary<int, Prompt> promptDict = (await GetPromptsAsync(user, promptIds)).ToDictionary(p => p.Id);
@@ -123,6 +123,6 @@ public class PromptService(AppDbContext db) : IPromptService
                 TextValue = prompt.Type == PromptType.Text ? (string)pv.Value : null,
                 NumberValue = prompt.Type == PromptType.Number ? (double?)pv.Value : null
             };
-        }).ToList();
+        });
     }
 }

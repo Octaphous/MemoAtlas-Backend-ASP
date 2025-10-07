@@ -21,8 +21,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
                 Date = m.Date,
                 TagCount = m.Tags.Count,
                 PromptAnswerCount = m.PromptAnswers.Count
-            })
-            .ToListAsync();
+            }).ToListAsync();
 
         return memos;
     }
@@ -51,13 +50,13 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         List<Tag> tags = [];
         if (body.Tags != null)
         {
-            tags = await tagService.GetTagsAsync(user, body.Tags);
+            tags = await tagService.GetTagsAsync(user, body.Tags.ToHashSet());
         }
 
         List<PromptAnswer> promptAnswers = [];
         if (body.PromptAnswers != null)
         {
-            promptAnswers = await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers);
+            promptAnswers = (await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers)).ToList();
         }
 
         Memo memo = new()
@@ -95,7 +94,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
 
         if (body.Tags?.Add != null)
         {
-            List<Tag> tags = await tagService.GetTagsAsync(user, body.Tags.Add);
+            List<Tag> tags = await tagService.GetTagsAsync(user, body.Tags.Add.ToHashSet());
             HashSet<int> existingIds = memo.Tags.Select(t => t.Id).ToHashSet();
             memo.Tags.AddRange(tags.Where(t => !existingIds.Contains(t.Id)));
         }
@@ -117,7 +116,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         if (body.PromptAnswers?.Add != null)
         {
             Dictionary<int, PromptAnswer> existingAnswers = memo.PromptAnswers.ToDictionary(pa => pa.PromptId);
-            List<PromptAnswer> newAnswers = await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers.Add);
+            IEnumerable<PromptAnswer> newAnswers = await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers.Add);
 
             foreach (PromptAnswer newAnswer in newAnswers)
             {

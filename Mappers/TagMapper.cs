@@ -20,7 +20,7 @@ public static class TagMapper
         Name = tg.Name,
         Description = tg.Description,
         Group = TagGroupMapper.ToDTO(tg.TagGroup),
-        Memos = tg.Memos.Select(MemoMapper.ToDTO).ToList(),
+        Memos = tg.Memos.Select(MemoMapper.ToDTO),
     };
 
     public static TagWithoutGroupDataDTO ToTagWithoutGroupDataDTO(Tag tg) => new()

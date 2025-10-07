@@ -38,8 +38,8 @@ public static class MemoMapper
                     Id = tag.Id,
                     Name = tag.Name,
                     Description = tag.Description
-                }).ToList()
-            }).ToList(),
-        PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToDTO).ToList()
+                })
+            }),
+        PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToDTO)
     };
 }

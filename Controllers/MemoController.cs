@@ -18,7 +18,7 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     [HttpGet]
     public async Task<IActionResult> GetAllMemos()
     {
-        List<MemoWithCountsDTO> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
+        IEnumerable<MemoWithCountsDTO> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser());
         return Ok(memos);
     }
 

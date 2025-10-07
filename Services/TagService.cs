@@ -22,7 +22,7 @@ public class TagService(AppDbContext db) : ITagService
         return tags;
     }
 
-    public async Task<List<Tag>> GetTagsAsync(User user, List<int> tagIds)
+    public async Task<List<Tag>> GetTagsAsync(User user, HashSet<int> tagIds)
     {
         if (tagIds.Count != tagIds.Distinct().Count())
         {

@@ -17,8 +17,8 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     [HttpGet]
     public async Task<IActionResult> GetAllPrompts()
     {
-        List<Prompt> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
-        return Ok(prompts.Select(PromptMapper.ToDTO).ToList());
+        IEnumerable<Prompt> prompts = await promptService.GetAllPromptsAsync(auth.GetRequiredUser());
+        return Ok(prompts.Select(PromptMapper.ToDTO));
     }
 
     [HttpGet("{id}")]

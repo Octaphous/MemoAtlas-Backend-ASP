@@ -5,5 +5,5 @@ public class TagGroupWithTagsDTO
     public required int Id { get; set; }
     public required string Name { get; set; }
     public required string Color { get; set; }
-    public required List<TagWithoutGroupDataDTO> Tags { get; set; }
+    public required IEnumerable<TagWithoutGroupDataDTO> Tags { get; set; }
 }

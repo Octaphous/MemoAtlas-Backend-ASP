@@ -11,8 +11,8 @@ public class MemoCreateRequest
     public required DateOnly Date { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one tag is required if tags are provided.")]
-    public List<int>? Tags { get; set; }
+    public IEnumerable<int>? Tags { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one prompt is required if prompts are provided.")]
-    public List<PromptAnswerRequest>? PromptAnswers { get; set; }
+    public IEnumerable<PromptAnswerRequest>? PromptAnswers { get; set; }
 }

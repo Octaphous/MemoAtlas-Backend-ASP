@@ -17,8 +17,8 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     [HttpGet]
     public async Task<IActionResult> GetAllTagGroups()
     {
-        List<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
-        return Ok(tagGroups.Select(TagGroupMapper.ToTagGroupWithTagsDTO).ToList());
+        IEnumerable<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
+        return Ok(tagGroups.Select(TagGroupMapper.ToTagGroupWithTagsDTO));
     }
 
     [HttpGet("{id}")]
