@@ -1,0 +1,21 @@
+meta {
+  name: enable private mode
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/me/enable-private
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "password": "uber125"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

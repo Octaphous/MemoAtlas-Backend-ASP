@@ -13,6 +13,8 @@ public class User
 
     public required string PasswordHash { get; set; }
 
+    public bool PrivateMode { get; set; } = false;
+
     // Navigation properties
     public List<Memo> Memos { get; set; } = [];
     public List<Prompt> Prompts { get; set; } = [];

@@ -7,4 +7,6 @@ public interface IUserService
 {
     Task<User> CreateUserAsync(UserCreateRequest body);
     Task<User> GetUserFromCredentialsAsync(UserLoginRequest body);
+    Task EnablePrivateModeAsync(User user, UserEnablePrivateRequest body);
+    Task DisablePrivateModeAsync(User user);
 }

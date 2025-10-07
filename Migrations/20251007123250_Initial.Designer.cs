@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251005211320_initial")]
-    partial class initial
+    [Migration("20251007123250_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("PrivateMode")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

@@ -1,11 +1,11 @@
 meta {
-  name: get user info
+  name: disable private mode
   type: http
-  seq: 1
+  seq: 3
 }
 
-get {
-  url: {{host}}/api/me
+post {
+  url: {{host}}/api/me/disable-private
   body: none
   auth: inherit
 }

@@ -47,4 +47,22 @@ public class UserService(AppDbContext db) : IUserService
 
         return user;
     }
+
+    public async Task EnablePrivateModeAsync(User user, UserEnablePrivateRequest body)
+    {
+        bool passwordValid = PasswordUtility.VerifyPassword(user.PasswordHash, body.Password);
+        if (!passwordValid)
+        {
+            throw new UnauthenticatedException("Invalid password.");
+        }
+
+        user.PrivateMode = true;
+        await db.SaveChangesAsync();
+    }
+
+    public async Task DisablePrivateModeAsync(User user)
+    {
+        user.PrivateMode = false;
+        await db.SaveChangesAsync();
+    }
 }
