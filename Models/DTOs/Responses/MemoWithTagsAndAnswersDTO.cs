@@ -1,5 +1,3 @@
-using MemoAtlas_Backend_ASP.Models.Entities;
-
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
 public class MemoWithTagsAndAnswersDTO

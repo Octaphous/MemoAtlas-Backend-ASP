@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using MemoAtlas_Backend_ASP.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace MemoAtlas_Backend_ASP.Utilities;

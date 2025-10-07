@@ -1,6 +1,5 @@
 using MemoAtlas_Backend_ASP.Filters;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
-using MemoAtlas_Backend_ASP.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 

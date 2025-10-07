@@ -1,5 +1,4 @@
 using MemoAtlas_Backend_ASP.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace MemoAtlas_Backend_ASP.Filters;
