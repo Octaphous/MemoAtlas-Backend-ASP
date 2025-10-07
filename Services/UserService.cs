@@ -6,6 +6,7 @@ using MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 using MemoAtlas_Backend_ASP.Services.Interfaces;
+using MemoAtlas_Backend_ASP.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +14,6 @@ namespace MemoAtlas_Backend_ASP.Services;
 
 public class UserService(AppDbContext db) : IUserService
 {
-    private readonly PasswordHasher<User?> passwordHasher = new();
-
     public async Task<User> CreateUserAsync(UserCreateRequest body)
     {
         bool userExists = await db.Users.AnyAsync(u => u.Email == body.Email);
@@ -23,12 +22,10 @@ public class UserService(AppDbContext db) : IUserService
             throw new ResourceConflictException("A user with this email already exists.");
         }
 
-        string passwordHash = passwordHasher.HashPassword(null, body.Password);
-
         User user = new()
         {
             Email = body.Email,
-            PasswordHash = passwordHash
+            PasswordHash = PasswordUtility.HashPassword(body.Password)
         };
 
         db.Users.Add(user);
@@ -42,8 +39,8 @@ public class UserService(AppDbContext db) : IUserService
         User user = await db.Users.FirstOrDefaultAsync(u => u.Email == body.Email)
             ?? throw new UnauthenticatedException("Invalid email or password.");
 
-        PasswordVerificationResult result = passwordHasher.VerifyHashedPassword(null, user.PasswordHash, body.Password);
-        if (result == PasswordVerificationResult.Failed)
+        bool passwordValid = PasswordUtility.VerifyPassword(user.PasswordHash, body.Password);
+        if (!passwordValid)
         {
             throw new UnauthenticatedException("Invalid email or password.");
         }
