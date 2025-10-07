@@ -16,13 +16,18 @@ params:path {
 
 body:json {
   {
-    "title": "en femma",
-    "promptAnswers": [
-      {
-        "promptId": 1,
-        "value": 1000
-      }
-    ]
+    "title": "dagens titel",
+    "tags": {
+      "add": [1]
+    },
+    "promptAnswers": {
+      "add": [
+        {
+          "promptId": 1,
+          "value": 1337
+        }
+      ]
+    }
   }
 }
 

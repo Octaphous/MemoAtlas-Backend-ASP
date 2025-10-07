@@ -195,9 +195,10 @@ namespace MemoAtlas_Backend_ASP.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PromptAnswers_MemoId",
+                name: "IX_PromptAnswers_MemoId_PromptId",
                 table: "PromptAnswers",
-                column: "MemoId");
+                columns: new[] { "MemoId", "PromptId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PromptAnswers_PromptId",

@@ -16,6 +16,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
-        mb.Entity<Memo>().HasIndex(e => new { e.UserId, e.Date }).IsUnique();
+
+        mb.Entity<Memo>()
+            .HasIndex(e => new { e.UserId, e.Date })
+            .IsUnique();
+
+        mb.Entity<PromptAnswer>()
+            .HasIndex(e => new { e.MemoId, e.PromptId })
+            .IsUnique();
     }
 }

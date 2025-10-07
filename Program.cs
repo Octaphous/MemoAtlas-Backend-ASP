@@ -28,8 +28,8 @@ builder.Services.AddScoped<IMemoService, MemoService>();
 
 var app = builder.Build();
 
-app.UseMiddleware<SessionMiddleware>();
 app.UseExceptionHandler();
+app.UseMiddleware<SessionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

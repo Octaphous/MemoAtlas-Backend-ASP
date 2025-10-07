@@ -85,9 +85,10 @@ namespace MemoAtlas_Backend_ASP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemoId");
-
                     b.HasIndex("PromptId");
+
+                    b.HasIndex("MemoId", "PromptId")
+                        .IsUnique();
 
                     b.ToTable("PromptAnswers");
                 });

@@ -84,16 +84,58 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
             memo.Title = body.Title;
         }
 
-        if (body.Tags != null)
+        if (body.Tags?.Add != null && body.Tags?.Remove != null)
         {
-            List<Tag> tags = await tagService.GetTagsAsync(user, body.Tags);
-            memo.Tags = tags;
+            var overlap = body.Tags.Add.Intersect(body.Tags.Remove).Any();
+            if (overlap)
+            {
+                throw new InvalidPayloadException("Cannot add and remove the same tag(s) in a single request.");
+            }
         }
 
-        if (body.PromptAnswers != null)
+        if (body.Tags?.Add != null)
         {
-            List<PromptAnswer> promptAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers);
-            memo.PromptAnswers = promptAnswers;
+            List<Tag> tags = await tagService.GetTagsAsync(user, body.Tags.Add);
+            HashSet<int> existingIds = memo.Tags.Select(t => t.Id).ToHashSet();
+            memo.Tags.AddRange(tags.Where(t => !existingIds.Contains(t.Id)));
+        }
+
+        if (body.Tags?.Remove != null)
+        {
+            memo.Tags.RemoveAll(t => body.Tags.Remove.Contains(t.Id));
+        }
+
+        if (body.PromptAnswers?.Add != null && body.PromptAnswers?.Remove != null)
+        {
+            var overlap = body.PromptAnswers.Add.Select(pa => pa.PromptId).Intersect(body.PromptAnswers.Remove).Any();
+            if (overlap)
+            {
+                throw new InvalidPayloadException("Cannot add and remove the same prompt answer(s) in a single request.");
+            }
+        }
+
+        if (body.PromptAnswers?.Add != null)
+        {
+            Dictionary<int, PromptAnswer> existingAnswers = memo.PromptAnswers.ToDictionary(pa => pa.PromptId);
+            List<PromptAnswer> newAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers.Add);
+
+            foreach (PromptAnswer newAnswer in newAnswers)
+            {
+                if (existingAnswers.TryGetValue(newAnswer.PromptId, out var existing))
+                {
+                    existing.TextValue = newAnswer.TextValue;
+                    existing.NumberValue = newAnswer.NumberValue;
+                }
+                else
+                {
+                    memo.PromptAnswers.Add(newAnswer);
+                }
+            }
+        }
+
+        if (body.PromptAnswers?.Remove != null)
+        {
+            memo.PromptAnswers.RemoveAll(pa => body.PromptAnswers.Remove.Contains(pa.PromptId));
         }
 
         await db.SaveChangesAsync();

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251007123250_Initial")]
+    [Migration("20251007145702_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -88,9 +88,10 @@ namespace MemoAtlas_Backend_ASP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemoId");
-
                     b.HasIndex("PromptId");
+
+                    b.HasIndex("MemoId", "PromptId")
+                        .IsUnique();
 
                     b.ToTable("PromptAnswers");
                 });

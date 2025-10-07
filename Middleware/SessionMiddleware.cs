@@ -1,4 +1,5 @@
 using MemoAtlas_Backend_ASP.Data;
+using MemoAtlas_Backend_ASP.Exceptions;
 using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
@@ -14,8 +15,15 @@ public class SessionMiddleware(RequestDelegate next)
     {
         if (context.Request.Cookies.TryGetValue(AppConstants.AuthTokenName, out string? token))
         {
-            Session session = await sessionService.GetSessionByTokenAsync(token);
-            context.Items["User"] = session.User;
+            try
+            {
+                Session session = await sessionService.GetSessionByTokenAsync(token);
+                context.Items["User"] = session.User;
+            }
+            catch (InvalidResourceException)
+            {
+                context.Items["User"] = null;
+            }
         }
 
         await next(context);
