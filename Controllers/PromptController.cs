@@ -23,7 +23,7 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     public async Task<IActionResult> GetPrompt(int id)
     {
         Prompt prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
-        return Ok(PromptMapper.ToDTO(prompt));
+        return Ok(PromptMapper.ToPromptWithMemosDTO(prompt));
     }
 
     [HttpPost]

@@ -42,6 +42,8 @@ public class PromptService(AppDbContext db) : IPromptService
     {
         Prompt prompt = await db.Prompts
             .Where(p => p.UserId == user.Id && p.Id == id)
+            .Include(p => p.PromptAnswers)
+            .ThenInclude(pa => pa.Memo)
             .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Prompt not found.");
 
         return prompt;
