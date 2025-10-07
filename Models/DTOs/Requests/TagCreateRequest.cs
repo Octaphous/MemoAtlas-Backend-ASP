@@ -7,8 +7,7 @@ public class TagCreateRequest
     [Required, MinLength(1, ErrorMessage = "Name cannot be empty.")]
     public required string Name { get; set; }
 
-    [Required]
-    public required string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
     [Required]
     public required int GroupId { get; set; }
