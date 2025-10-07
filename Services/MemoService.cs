@@ -57,7 +57,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         List<PromptAnswer> promptAnswers = [];
         if (body.PromptAnswers != null)
         {
-            promptAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers);
+            promptAnswers = await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers);
         }
 
         Memo memo = new()
@@ -117,7 +117,7 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         if (body.PromptAnswers?.Add != null)
         {
             Dictionary<int, PromptAnswer> existingAnswers = memo.PromptAnswers.ToDictionary(pa => pa.PromptId);
-            List<PromptAnswer> newAnswers = await CreatePromptAnswersAsync(user, body.PromptAnswers.Add);
+            List<PromptAnswer> newAnswers = await promptService.CreatePromptAnswersAsync(user, body.PromptAnswers.Add);
 
             foreach (PromptAnswer newAnswer in newAnswers)
             {
@@ -147,42 +147,5 @@ public class MemoService(AppDbContext db, ITagService tagService, IPromptService
         Memo memo = await db.Memos.FirstOrDefaultAsync(m => m.Id == memoId && m.UserId == user.Id) ?? throw new InvalidResourceException();
         db.Memos.Remove(memo);
         await db.SaveChangesAsync();
-    }
-
-    private void VerifyPromptAnswers(List<PromptAnswerRequest> promptAnswers, List<Prompt> prompts)
-    {
-        foreach (PromptAnswerRequest pv in promptAnswers)
-        {
-            Prompt prompt = prompts.First(p => p.Id == pv.PromptId);
-
-            if (prompt.Type == PromptType.Text && pv.Value is not string)
-            {
-                throw new InvalidPayloadException($"Prompt with id {prompt.Id} requires a text value.");
-            }
-            else if (prompt.Type == PromptType.Number && pv.Value is not double)
-            {
-                throw new InvalidPayloadException($"Prompt with id {prompt.Id} requires a number value.");
-            }
-        }
-    }
-
-    private async Task<List<PromptAnswer>> CreatePromptAnswersAsync(User user, List<PromptAnswerRequest> promptAnswers)
-    {
-        List<int> promptIds = [.. promptAnswers.Select(pv => pv.PromptId)];
-        List<Prompt> prompts = await promptService.GetPromptsAsync(user, promptIds);
-
-        VerifyPromptAnswers(promptAnswers, prompts);
-
-        return [.. promptAnswers.Select(pv =>
-        {
-            Prompt prompt = prompts.First(p => p.Id == pv.PromptId);
-
-            return new PromptAnswer
-            {
-                PromptId = prompt.Id,
-                TextValue = prompt.Type == PromptType.Text ? (string)pv.Value : null,
-                NumberValue = prompt.Type == PromptType.Number ? (double?)pv.Value : null
-            };
-        })];
     }
 }
