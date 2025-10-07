@@ -27,7 +27,7 @@ public class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExceptionHand
             problemDetails.Title = exception.Message;
         }
 
-        logger.LogError(problemDetails.Title);
+        logger.LogError("{Message}", problemDetails.Title);
         problemDetails.Status = httpContext.Response.StatusCode;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken).ConfigureAwait(false);
         return true;
