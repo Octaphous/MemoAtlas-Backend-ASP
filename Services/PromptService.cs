@@ -79,7 +79,6 @@ public class PromptService(AppDbContext db) : IPromptService
             prompt.Question = body.Question;
         }
 
-        db.Prompts.Update(prompt);
         await db.SaveChangesAsync();
         return prompt;
     }
