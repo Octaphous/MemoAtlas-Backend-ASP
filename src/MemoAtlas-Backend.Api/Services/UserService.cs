@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class UserService(AppDbContext db) : IUserService
+public class UserService(AppDbContext db, IPasswordHasherService passwordHasherService) : IUserService
 {
     public async Task<User> CreateUserAsync(UserCreateRequest body)
     {
@@ -21,7 +21,7 @@ public class UserService(AppDbContext db) : IUserService
         User user = new()
         {
             Email = body.Email,
-            PasswordHash = PasswordUtility.HashPassword(body.Password)
+            PasswordHash = passwordHasherService.HashPassword(body.Password)
         };
 
         db.Users.Add(user);
@@ -35,7 +35,7 @@ public class UserService(AppDbContext db) : IUserService
         User user = await db.Users.FirstOrDefaultAsync(u => u.Email == body.Email)
             ?? throw new UnauthenticatedException("Invalid email or password.");
 
-        bool passwordValid = PasswordUtility.VerifyPassword(user.PasswordHash, body.Password);
+        bool passwordValid = passwordHasherService.VerifyPassword(user.PasswordHash, body.Password);
         if (!passwordValid)
         {
             throw new UnauthenticatedException("Invalid email or password.");
@@ -46,7 +46,7 @@ public class UserService(AppDbContext db) : IUserService
 
     public async Task EnablePrivateModeAsync(User user, UserEnablePrivateRequest body)
     {
-        bool passwordValid = PasswordUtility.VerifyPassword(user.PasswordHash, body.Password);
+        bool passwordValid = passwordHasherService.VerifyPassword(user.PasswordHash, body.Password);
         if (!passwordValid)
         {
             throw new UnauthenticatedException("Invalid password.");

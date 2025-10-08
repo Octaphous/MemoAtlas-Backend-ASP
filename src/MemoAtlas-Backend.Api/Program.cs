@@ -18,6 +18,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
