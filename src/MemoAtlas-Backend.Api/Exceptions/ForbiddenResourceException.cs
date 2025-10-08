@@ -1,0 +1,6 @@
+using System.Net;
+
+namespace MemoAtlas_Backend.Api.Exceptions;
+
+public class ForbiddenResourceException(string msg = "You do not have permission to access this resource.") : StatusCodeException(msg, HttpStatusCode.Forbidden)
+{ }

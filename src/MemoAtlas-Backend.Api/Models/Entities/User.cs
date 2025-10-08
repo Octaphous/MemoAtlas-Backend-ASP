@@ -1,0 +1,21 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MemoAtlas_Backend.Api.Models.Entities;
+
+public class User
+{
+    public int Id { get; set; }
+
+    [MaxLength(255)]
+    public required string Email { get; set; }
+
+    public required string PasswordHash { get; set; }
+
+    public bool PrivateMode { get; set; } = false;
+
+    // Navigation properties
+    public List<Memo> Memos { get; set; } = [];
+    public List<Prompt> Prompts { get; set; } = [];
+    public List<TagGroup> TagGroups { get; set; } = [];
+    public List<Session> Sessions { get; set; } = [];
+}

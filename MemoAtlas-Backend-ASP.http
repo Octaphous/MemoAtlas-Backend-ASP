@@ -1,6 +1,0 @@
-@MemoAtlas_Backend_ASP_HostAddress = http://localhost:5240
-
-GET {{MemoAtlas_Backend_ASP_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
