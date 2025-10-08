@@ -11,5 +11,4 @@ public interface IPromptService
     Task<Prompt> CreatePromptAsync(User user, PromptCreateRequest body);
     Task<Prompt> UpdatePromptAsync(User user, int id, PromptUpdateRequest body);
     Task DeletePromptAsync(User user, int id);
-    Task<IEnumerable<PromptAnswer>> CreatePromptAnswersAsync(User user, IEnumerable<PromptAnswerRequest> promptAnswers);
 }

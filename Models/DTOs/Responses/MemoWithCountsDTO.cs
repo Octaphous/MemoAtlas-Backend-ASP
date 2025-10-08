@@ -7,4 +7,5 @@ public class MemoWithCountsDTO
     public required DateOnly Date { get; set; }
     public required int TagCount { get; set; }
     public required int PromptAnswerCount { get; set; }
+    public required bool Private { get; set; }
 }

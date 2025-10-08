@@ -9,4 +9,7 @@ public class PromptCreateRequest
 
     [Required, Range(0, 1, ErrorMessage = "Type must be either 0 (number) or 1 (text).")]
     public required int Type { get; set; }
+
+    [Required]
+    public required bool Private { get; set; }
 }

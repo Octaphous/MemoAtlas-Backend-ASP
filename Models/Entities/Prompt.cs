@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MemoAtlas.Models;
 
 namespace MemoAtlas_Backend_ASP.Models.Entities;
 
-public class Prompt
+public class Prompt : IPrivatable
 {
     public int Id { get; set; }
 
@@ -12,6 +13,8 @@ public class Prompt
     public required string Question { get; set; }
 
     public required PromptType Type { get; set; }
+
+    public required bool Private { get; set; }
 
     // Navigation properties
     public User User { get; set; } = null!;

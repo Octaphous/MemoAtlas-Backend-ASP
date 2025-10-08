@@ -9,7 +9,8 @@ public static class TagGroupMapper
     {
         Id = tg.Id,
         Name = tg.Name,
-        Color = tg.Color
+        Color = tg.Color,
+        Private = tg.Private
     };
 
     public static TagGroupWithTagsDTO ToTagGroupWithTagsDTO(TagGroup tg) => new()
@@ -17,6 +18,7 @@ public static class TagGroupMapper
         Id = tg.Id,
         Name = tg.Name,
         Color = tg.Color,
-        Tags = tg.Tags.Select(TagMapper.ToTagWithoutGroupDataDTO)
+        Tags = tg.Tags.Select(TagMapper.ToTagWithoutGroupDataDTO),
+        Private = tg.Private
     };
 }

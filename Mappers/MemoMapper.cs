@@ -9,7 +9,8 @@ public static class MemoMapper
     {
         Id = memo.Id,
         Title = memo.Title,
-        Date = memo.Date
+        Date = memo.Date,
+        Private = memo.Private
     };
 
     public static MemoWithCountsDTO ToMemoWithCountsDTO(Memo memo) => new MemoWithCountsDTO
@@ -18,7 +19,8 @@ public static class MemoMapper
         Title = memo.Title,
         Date = memo.Date,
         TagCount = memo.Tags.Count,
-        PromptAnswerCount = memo.PromptAnswers.Count
+        PromptAnswerCount = memo.PromptAnswers.Count,
+        Private = memo.Private
     };
 
     public static MemoWithTagsAndAnswersDTO ToMemoWithTagsAndAnswersDTO(Memo memo) => new()
@@ -37,9 +39,12 @@ public static class MemoMapper
                 {
                     Id = tag.Id,
                     Name = tag.Name,
-                    Description = tag.Description
-                })
+                    Description = tag.Description,
+                    Private = tag.Private
+                }),
+                Private = group.Key.Private
             }),
-        PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToDTO)
+        PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToPromptAnswerWithPromptDTO),
+        Private = memo.Private
     };
 }

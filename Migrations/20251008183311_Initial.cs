@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -33,7 +34,8 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Date = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,7 +56,8 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Question = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,7 +99,8 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Color = table.Column<string>(type: "TEXT", nullable: false)
+                    Color = table.Column<string>(type: "TEXT", nullable: false),
+                    Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,7 +122,8 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     MemoId = table.Column<int>(type: "INTEGER", nullable: false),
                     PromptId = table.Column<int>(type: "INTEGER", nullable: false),
                     TextValue = table.Column<string>(type: "TEXT", nullable: true),
-                    NumberValue = table.Column<double>(type: "REAL", nullable: true)
+                    NumberValue = table.Column<double>(type: "REAL", nullable: true),
+                    Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,7 +150,8 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     TagGroupId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false)
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,10 +200,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PromptAnswers_MemoId_PromptId",
+                name: "IX_PromptAnswers_MemoId",
                 table: "PromptAnswers",
-                columns: new[] { "MemoId", "PromptId" },
-                unique: true);
+                column: "MemoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PromptAnswers_PromptId",

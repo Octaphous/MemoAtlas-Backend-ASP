@@ -6,5 +6,6 @@ public class MemoWithTagsAndAnswersDTO
     public required string Title { get; set; }
     public required DateOnly Date { get; set; }
     public required IEnumerable<TagGroupWithTagsDTO> TagGroups { get; set; }
-    public required IEnumerable<PromptAnswerDTO> PromptAnswers { get; set; }
+    public required IEnumerable<PromptAnswerWithPromptDTO> PromptAnswers { get; set; }
+    public required bool Private { get; set; }
 }

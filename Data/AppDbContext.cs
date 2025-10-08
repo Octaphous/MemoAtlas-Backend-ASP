@@ -20,9 +20,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         mb.Entity<Memo>()
             .HasIndex(e => new { e.UserId, e.Date })
             .IsUnique();
-
-        mb.Entity<PromptAnswer>()
-            .HasIndex(e => new { e.MemoId, e.PromptId })
-            .IsUnique();
     }
 }

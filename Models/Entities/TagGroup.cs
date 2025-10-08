@@ -1,6 +1,8 @@
-﻿namespace MemoAtlas_Backend_ASP.Models.Entities;
+﻿using MemoAtlas.Models;
 
-public class TagGroup
+namespace MemoAtlas_Backend_ASP.Models.Entities;
+
+public class TagGroup : IPrivatable
 {
     public int Id { get; set; }
 
@@ -9,6 +11,8 @@ public class TagGroup
     public required string Name { get; set; }
 
     public required string Color { get; set; }
+
+    public required bool Private { get; set; }
 
     // Navigation properties
     public User User { get; set; } = null!;

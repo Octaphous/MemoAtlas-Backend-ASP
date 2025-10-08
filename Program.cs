@@ -17,12 +17,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
+
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<ITagGroupService, TagGroupService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IPromptService, PromptService>();
+builder.Services.AddScoped<IPromptAnswerService, PromptAnswerService>();
 builder.Services.AddScoped<IMemoService, MemoService>();
 
 var app = builder.Build();

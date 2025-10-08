@@ -1,4 +1,3 @@
-using MemoAtlas_Backend_ASP.Models;
 using MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 using MemoAtlas_Backend_ASP.Models.Entities;
 
@@ -10,7 +9,8 @@ public static class PromptMapper
     {
         Id = prompt.Id,
         Question = prompt.Question,
-        Type = prompt.Type
+        Type = prompt.Type,
+        Private = prompt.Private
     };
 
     public static PromptWithMemosDTO ToPromptWithMemosDTO(Prompt prompt) => new()
@@ -23,12 +23,9 @@ public static class PromptMapper
             Id = pa.Memo.Id,
             Title = pa.Memo.Title,
             Date = pa.Memo.Date,
-            Value = prompt.Type switch
-            {
-                PromptType.Text => pa.TextValue,
-                PromptType.Number => pa.NumberValue,
-                _ => null
-            }
-        })
+            PromptAnswer = PromptAnswerMapper.ToDTO(pa),
+            Private = pa.Memo.Private
+        }),
+        Private = prompt.Private
     };
 }

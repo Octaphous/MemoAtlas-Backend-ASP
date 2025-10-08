@@ -1,6 +1,8 @@
-﻿namespace MemoAtlas_Backend_ASP.Models.Entities;
+﻿using MemoAtlas.Models;
 
-public class PromptAnswer
+namespace MemoAtlas_Backend_ASP.Models.Entities;
+
+public class PromptAnswer : IPrivatable
 {
     public int Id { get; set; }
 
@@ -11,6 +13,8 @@ public class PromptAnswer
     public string? TextValue { get; set; }
 
     public double? NumberValue { get; set; }
+
+    public required bool Private { get; set; }
 
     // Navigation properties
     public Memo Memo { get; set; } = null!;

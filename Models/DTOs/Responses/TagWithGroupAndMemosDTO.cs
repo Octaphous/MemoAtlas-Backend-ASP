@@ -7,4 +7,5 @@ public class TagWithGroupAndMemosDTO
     public required string Description { get; set; }
     public required TagGroupDTO Group { get; set; }
     public required IEnumerable<MemoDTO> Memos { get; set; }
+    public required bool Private { get; set; }
 }

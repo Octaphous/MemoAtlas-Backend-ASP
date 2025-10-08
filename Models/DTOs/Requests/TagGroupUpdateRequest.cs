@@ -8,4 +8,6 @@ public class TagGroupUpdateRequest
     public string? Name { get; set; }
 
     public string? Color { get; set; }
+
+    public bool? Private { get; set; }
 }

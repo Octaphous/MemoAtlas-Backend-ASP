@@ -11,4 +11,7 @@ public class TagCreateRequest
 
     [Required]
     public required int GroupId { get; set; }
+
+    [Required]
+    public required bool Private { get; set; }
 }

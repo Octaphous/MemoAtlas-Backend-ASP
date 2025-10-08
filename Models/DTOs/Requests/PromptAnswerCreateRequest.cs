@@ -4,7 +4,7 @@ using MemoAtlas_Backend_ASP.Converters;
 
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Requests;
 
-public class PromptAnswerRequest
+public class PromptAnswerCreateRequest
 {
     [Required]
     public required int PromptId { get; set; }
@@ -12,4 +12,7 @@ public class PromptAnswerRequest
     [Required]
     [JsonConverter(typeof(JSONObjectConverter))]
     public required object Value { get; set; }
+
+    [Required]
+    public required bool Private { get; set; }
 }

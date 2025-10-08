@@ -1,6 +1,8 @@
-﻿namespace MemoAtlas_Backend_ASP.Models.Entities;
+﻿using MemoAtlas.Models;
 
-public class Memo
+namespace MemoAtlas_Backend_ASP.Models.Entities;
+
+public class Memo : IPrivatable
 {
     public int Id { get; set; }
 
@@ -9,6 +11,8 @@ public class Memo
     public required string Title { get; set; }
 
     public required DateOnly Date { get; set; }
+
+    public required bool Private { get; set; }
 
     // Navigation properties
     public User User { get; set; } = null!;

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend_ASP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251007145702_Initial")]
+    [Migration("20251008183311_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -28,6 +28,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("Private")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -48,6 +51,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Private")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Question")
@@ -80,6 +86,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     b.Property<double?>("NumberValue")
                         .HasColumnType("REAL");
 
+                    b.Property<bool>("Private")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("PromptId")
                         .HasColumnType("INTEGER");
 
@@ -88,10 +97,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PromptId");
+                    b.HasIndex("MemoId");
 
-                    b.HasIndex("MemoId", "PromptId")
-                        .IsUnique();
+                    b.HasIndex("PromptId");
 
                     b.ToTable("PromptAnswers");
                 });
@@ -133,6 +141,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Private")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("TagGroupId")
                         .HasColumnType("INTEGER");
 
@@ -156,6 +167,9 @@ namespace MemoAtlas_Backend_ASP.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("Private")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");

@@ -1,9 +1,9 @@
 namespace MemoAtlas_Backend_ASP.Models.DTOs.Responses;
 
-public class PromptDTO
+public class PromptAnswerWithPromptDTO
 {
     public required int Id { get; set; }
-    public required string Question { get; set; }
-    public required PromptType Type { get; set; }
+    public required PromptDTO Prompt { get; set; }
+    public required object? Value { get; set; }
     public required bool Private { get; set; }
 }

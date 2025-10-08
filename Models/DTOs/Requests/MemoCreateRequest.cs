@@ -14,5 +14,8 @@ public class MemoCreateRequest
     public IEnumerable<int>? Tags { get; set; }
 
     [MinLength(1, ErrorMessage = "At least one prompt is required if prompts are provided.")]
-    public IEnumerable<PromptAnswerRequest>? PromptAnswers { get; set; }
+    public IEnumerable<PromptAnswerCreateRequest>? PromptAnswers { get; set; }
+
+    [Required]
+    public required bool Private { get; set; }
 }

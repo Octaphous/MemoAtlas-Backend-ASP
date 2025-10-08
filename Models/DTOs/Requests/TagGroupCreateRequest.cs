@@ -9,4 +9,7 @@ public class TagGroupCreateRequest
 
     [Required]
     public required string Color { get; set; }
+
+    [Required]
+    public required bool Private { get; set; }
 }
