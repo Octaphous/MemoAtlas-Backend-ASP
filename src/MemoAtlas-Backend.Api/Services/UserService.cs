@@ -2,17 +2,18 @@ using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
+using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
 using MemoAtlas_Backend.Api.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class UserService(AppDbContext db, IPasswordHasherService passwordHasherService) : IUserService
+public class UserService(IUserRepository userRepository, IPasswordHasherService passwordHasherService) : IUserService
 {
     public async Task<User> CreateUserAsync(UserCreateRequest body)
     {
-        bool userExists = await db.Users.AnyAsync(u => u.Email == body.Email);
+        bool userExists = await userRepository.UserExistsAsync(body.Email);
         if (userExists)
         {
             throw new ResourceConflictException("A user with this email already exists.");
@@ -24,15 +25,15 @@ public class UserService(AppDbContext db, IPasswordHasherService passwordHasherS
             PasswordHash = passwordHasherService.HashPassword(body.Password)
         };
 
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        userRepository.AddUser(user);
+        await userRepository.SaveChangesAsync();
 
         return user;
     }
 
     public async Task<User> GetUserFromCredentialsAsync(UserLoginRequest body)
     {
-        User user = await db.Users.FirstOrDefaultAsync(u => u.Email == body.Email)
+        User user = await userRepository.GetUserByEmailAsync(body.Email)
             ?? throw new UnauthenticatedException("Invalid email or password.");
 
         bool passwordValid = passwordHasherService.VerifyPassword(user.PasswordHash, body.Password);
@@ -53,12 +54,12 @@ public class UserService(AppDbContext db, IPasswordHasherService passwordHasherS
         }
 
         user.PrivateMode = true;
-        await db.SaveChangesAsync();
+        await userRepository.SaveChangesAsync();
     }
 
     public async Task DisablePrivateModeAsync(User user)
     {
         user.PrivateMode = false;
-        await db.SaveChangesAsync();
+        await userRepository.SaveChangesAsync();
     }
 }

@@ -1,17 +1,15 @@
-using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.Entities;
+using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class SessionService(AppDbContext db) : ISessionService
+public class SessionService(ISessionRepository sessionRepository) : ISessionService
 {
     public async Task<Session> GetSessionByTokenAsync(string token)
     {
-        Session session = await db.Sessions.Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.Token == token && s.ExpiresAt > DateTime.UtcNow)
+        Session session = await sessionRepository.GetSessionByTokenAsync(token)
             ?? throw new InvalidResourceException("Session not found.");
 
         return session;
@@ -26,18 +24,16 @@ public class SessionService(AppDbContext db) : ISessionService
             ExpiresAt = DateTime.UtcNow.AddHours(1)
         };
 
-        db.Sessions.Add(session);
-        await db.SaveChangesAsync();
+        sessionRepository.AddSession(session);
+        await sessionRepository.SaveChangesAsync();
 
         return session;
     }
 
     public async Task DeleteSessionAsync(string token)
     {
-        Session session = await db.Sessions.FirstOrDefaultAsync(s => s.Token == token)
-            ?? throw new InvalidResourceException("Session not found.");
-
-        db.Sessions.Remove(session);
-        await db.SaveChangesAsync();
+        Session session = await GetSessionByTokenAsync(token);
+        sessionRepository.DeleteSession(session);
+        await sessionRepository.SaveChangesAsync();
     }
 }

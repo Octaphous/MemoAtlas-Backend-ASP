@@ -1,5 +1,7 @@
 using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Middleware;
+using MemoAtlas_Backend.Api.Repositories;
+using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services;
 using MemoAtlas_Backend.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,13 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITagGroupRepository, TagGroupRepository>();
+builder.Services.AddScoped<IPromptRepository, PromptRepository>();
+builder.Services.AddScoped<IMemoRepository, MemoRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -1,23 +1,17 @@
-using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
+using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
-using MemoAtlas_Backend.Api.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class TagGroupService(AppDbContext db) : ITagGroupService
+public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroupService
 {
-    public async Task<List<TagGroup>> GetAllTagGroupsAsync(User user)
+    public async Task<IEnumerable<TagGroup>> GetAllTagGroupsAsync(User user)
     {
-        List<TagGroup> tagGroups = await db.TagGroups
-            .VisibleToUser(user)
-            .Where(tg => tg.UserId == user.Id)
-            .Include(tg => tg.Tags)
-            .ToListAsync();
+        List<TagGroup> tagGroups = await tagGroupRepository.GetAllTagGroupsAsync(user);
 
         if (!user.PrivateMode)
         {
@@ -32,11 +26,8 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
 
     public async Task<TagGroup> GetTagGroupAsync(User user, int id)
     {
-        TagGroup tagGroup = await db.TagGroups
-            .VisibleToUser(user)
-            .Where(tg => tg.UserId == user.Id && tg.Id == id)
-            .Include(tg => tg.Tags)
-            .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
+        TagGroup tagGroup = await tagGroupRepository.GetTagGroupAsync(user, id)
+            ?? throw new InvalidResourceException("Tag group not found.");
 
         tagGroup.Tags = tagGroup.Tags.Where(tag => !tag.Private || user.PrivateMode).ToList();
 
@@ -58,18 +49,15 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
             Private = body.Private
         };
 
-        db.TagGroups.Add(tagGroup);
-        await db.SaveChangesAsync();
+        tagGroupRepository.AddTagGroup(tagGroup);
+        await tagGroupRepository.SaveChangesAsync();
 
         return tagGroup;
     }
 
     public async Task<TagGroup> UpdateTagGroupAsync(User user, int id, TagGroupUpdateRequest body)
     {
-        TagGroup tagGroup = await db.TagGroups
-            .VisibleToUser(user)
-            .Where(tg => tg.UserId == user.Id && tg.Id == id)
-            .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
+        TagGroup tagGroup = await GetTagGroupAsync(user, id);
 
         if (body.Name != null)
         {
@@ -90,19 +78,15 @@ public class TagGroupService(AppDbContext db) : ITagGroupService
             tagGroup.Private = body.Private.Value;
         }
 
-        await db.SaveChangesAsync();
+        await tagGroupRepository.SaveChangesAsync();
         return tagGroup;
     }
 
     public async Task DeleteTagGroupAsync(User user, int id)
     {
-        TagGroup tagGroup = await db.TagGroups
-            .VisibleToUser(user)
-            .Where(tg => tg.UserId == user.Id && tg.Id == id)
-            .FirstOrDefaultAsync() ?? throw new InvalidResourceException("Tag group not found.");
+        TagGroup tagGroup = await GetTagGroupAsync(user, id);
 
-        db.TagGroups.Remove(tagGroup);
-        await db.SaveChangesAsync();
+        tagGroupRepository.DeleteTagGroup(tagGroup);
+        await tagGroupRepository.SaveChangesAsync();
     }
-
 }

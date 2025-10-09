@@ -5,7 +5,7 @@ namespace MemoAtlas_Backend.Api.Services.Interfaces;
 
 public interface ITagGroupService
 {
-    Task<List<TagGroup>> GetAllTagGroupsAsync(User user);
+    Task<IEnumerable<TagGroup>> GetAllTagGroupsAsync(User user);
     Task<TagGroup> GetTagGroupAsync(User user, int id);
     Task<TagGroup> CreateTagGroupAsync(User user, TagGroupCreateRequest body);
     Task<TagGroup> UpdateTagGroupAsync(User user, int id, TagGroupUpdateRequest body);

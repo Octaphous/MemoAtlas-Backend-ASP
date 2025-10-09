@@ -1,41 +1,31 @@
-using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
+using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
-using MemoAtlas_Backend.Api.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class TagService(AppDbContext db) : ITagService
+public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupService) : ITagService
 {
-    public async Task<List<Tag>> GetAllTagsAsync(User user)
+    public async Task<IEnumerable<Tag>> GetAllTagsAsync(User user)
     {
-        List<Tag> tags = await db.Tags
-            .VisibleToUser(user)
-            .Where(t => t.TagGroup.UserId == user.Id)
-            .Include(t => t.TagGroup)
-            .ToListAsync();
+        IEnumerable<Tag> tags = await tagRepository.GetAllTagsAsync(user);
 
         // If user is not in private mode, remove any tags that are in a private tag group
-        tags = tags.Where(tag => !tag.TagGroup.Private || user.PrivateMode).ToList();
+        tags = tags.Where(tag => !tag.TagGroup.Private || user.PrivateMode);
 
         return tags;
     }
 
-    public async Task<List<Tag>> GetTagsAsync(User user, HashSet<int> tagIds)
+    public async Task<IEnumerable<Tag>> GetTagsAsync(User user, HashSet<int> tagIds)
     {
         if (tagIds.Count != tagIds.Distinct().Count())
         {
             throw new InvalidPayloadException("Some of the provided tag IDs are duplicates.");
         }
 
-        List<Tag> tags = await db.Tags
-            .VisibleToUser(user)
-            .Where(t => t.TagGroup.UserId == user.Id && tagIds.Contains(t.Id))
-            .Include(t => t.TagGroup)
-            .ToListAsync();
+        List<Tag> tags = (await tagRepository.GetTagsAsync(user, tagIds)).ToList();
 
         if (tags.Count != tagIds.Count)
         {
@@ -50,12 +40,7 @@ public class TagService(AppDbContext db) : ITagService
 
     public async Task<Tag> GetTagAsync(User user, int id)
     {
-        Tag? tag = await db.Tags
-            .VisibleToUser(user)
-            .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
-            .Include(t => t.TagGroup)
-            .Include(t => t.Memos)
-            .FirstOrDefaultAsync();
+        Tag? tag = await tagRepository.GetTagAsync(user, id);
 
         // If user is not in private mode, ensure the tag is not in a private tag group
         if (tag == null || (tag.TagGroup.Private && !user.PrivateMode))
@@ -71,10 +56,7 @@ public class TagService(AppDbContext db) : ITagService
 
     public async Task<Tag> CreateTagAsync(User user, TagCreateRequest body)
     {
-        TagGroup tagGroup = await db.TagGroups
-            .VisibleToUser(user)
-            .Where(tg => tg.UserId == user.Id && tg.Id == body.GroupId)
-            .FirstOrDefaultAsync() ?? throw new InvalidPayloadException("Specified tag group does not exist.");
+        TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(user, body.GroupId);
 
         Tag tag = new()
         {
@@ -84,21 +66,16 @@ public class TagService(AppDbContext db) : ITagService
             Private = body.Private
         };
 
-        db.Tags.Add(tag);
-        await db.SaveChangesAsync();
-        await db.Entry(tag).Reference(t => t.TagGroup).LoadAsync();
+        tagRepository.AddTag(tag);
+        await tagRepository.SaveChangesAsync();
+        tag.TagGroup = tagGroup;
 
         return tag;
     }
 
     public async Task<Tag> UpdateTagAsync(User user, int id, TagUpdateRequest body)
     {
-        Tag? tag = await db.Tags
-            .VisibleToUser(user)
-            .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
-            .Include(t => t.TagGroup)
-            .Include(t => t.Memos)
-            .FirstOrDefaultAsync();
+        Tag? tag = await tagRepository.GetTagAsync(user, id);
 
         // If user is not in private mode, ensure the tag is not in a private tag group
         if (tag == null || (tag.TagGroup.Private && !user.PrivateMode))
@@ -124,14 +101,14 @@ public class TagService(AppDbContext db) : ITagService
             tag.Private = body.Private.Value;
         }
 
-        await db.SaveChangesAsync();
+        await tagRepository.SaveChangesAsync();
         return tag;
     }
 
     public async Task DeleteTagAsync(User user, int id)
     {
         Tag tag = await GetTagAsync(user, id);
-        db.Tags.Remove(tag);
-        await db.SaveChangesAsync();
+        tagRepository.DeleteTag(tag);
+        await tagRepository.SaveChangesAsync();
     }
 }
