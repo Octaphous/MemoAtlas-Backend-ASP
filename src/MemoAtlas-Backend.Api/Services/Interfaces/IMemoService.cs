@@ -6,7 +6,7 @@ namespace MemoAtlas_Backend.Api.Services.Interfaces;
 
 public interface IMemoService
 {
-    Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user);
+    Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, DateOnly? startDate, DateOnly? endDate);
     Task<Memo> GetMemoAsync(User user, int id);
     Task<Memo> CreateMemoAsync(User user, MemoCreateRequest body);
     Task<Memo> UpdateMemoAsync(User user, int id, MemoUpdateRequest body);

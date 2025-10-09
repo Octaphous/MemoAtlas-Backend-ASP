@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/memos
+  url: {{host}}/api/memos?startDate=2025-10-01&endDate=2025-10-31
   body: none
   auth: inherit
+}
+
+params:query {
+  startDate: 2025-10-01
+  endDate: 2025-10-31
 }
 
 settings {

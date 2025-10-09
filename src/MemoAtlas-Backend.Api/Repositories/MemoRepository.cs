@@ -9,11 +9,24 @@ namespace MemoAtlas_Backend.Api.Repositories;
 
 public class MemoRepository(AppDbContext db) : IMemoRepository
 {
-    public async Task<List<MemoWithCountsDTO>> GetAllMemosAsync(User user)
+    public async Task<List<MemoWithCountsDTO>> GetAllMemosAsync(User user, DateOnly? startDate, DateOnly? endDate)
     {
-        return await db.Memos
+        IQueryable<Memo> query = db.Memos
             .VisibleToUser(user)
-            .Where(m => m.UserId == user.Id)
+            .Where(m => m.UserId == user.Id);
+
+        if (startDate != null)
+        {
+            query = query.Where(m => m.Date >= startDate);
+        }
+
+        if (endDate != null)
+        {
+            query = query.Where(m => m.Date <= endDate);
+        }
+
+        return await query
+            .OrderByDescending(m => m.Date)
             .Select(m => new MemoWithCountsDTO
             {
                 Id = m.Id,
@@ -22,7 +35,8 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
                 TagCount = m.Tags.Count,
                 PromptAnswerCount = m.PromptAnswers.Count,
                 Private = m.Private
-            }).ToListAsync();
+            })
+            .ToListAsync();
     }
 
     public async Task<Memo?> GetMemoAsync(User user, int memoId)
