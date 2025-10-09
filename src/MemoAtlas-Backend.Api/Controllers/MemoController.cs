@@ -14,9 +14,11 @@ namespace MemoAtlas_Backend.Api.Controllers;
 public class MemoController(IUserContext auth, IMemoService memoService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllMemos([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
+    public async Task<IActionResult> GetAllMemos([FromQuery] MemoFilterRequest filter)
     {
-        IEnumerable<MemoWithCountsDTO> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser(), startDate, endDate);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        IEnumerable<MemoWithCountsDTO> memos = await memoService.ListAllMemosAsync(auth.GetRequiredUser(), filter);
         return Ok(memos);
     }
 

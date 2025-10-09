@@ -1,4 +1,5 @@
 using MemoAtlas_Backend.Api.Data;
+using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
@@ -9,20 +10,25 @@ namespace MemoAtlas_Backend.Api.Repositories;
 
 public class MemoRepository(AppDbContext db) : IMemoRepository
 {
-    public async Task<List<MemoWithCountsDTO>> GetAllMemosAsync(User user, DateOnly? startDate, DateOnly? endDate)
+    public async Task<List<MemoWithCountsDTO>> GetAllMemosAsync(User user, MemoFilterRequest filter)
     {
         IQueryable<Memo> query = db.Memos
             .VisibleToUser(user)
             .Where(m => m.UserId == user.Id);
 
-        if (startDate != null)
+        if (filter.StartDate != null)
         {
-            query = query.Where(m => m.Date >= startDate);
+            query = query.Where(m => m.Date >= filter.StartDate);
         }
 
-        if (endDate != null)
+        if (filter.EndDate != null)
         {
-            query = query.Where(m => m.Date <= endDate);
+            query = query.Where(m => m.Date <= filter.EndDate);
+        }
+
+        if (filter.TagIds != null && filter.TagIds.Count > 0)
+        {
+            query = query.Where(m => m.Tags.All(t => filter.TagIds.Contains(t.Id)));
         }
 
         return await query

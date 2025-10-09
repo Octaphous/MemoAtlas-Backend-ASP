@@ -9,14 +9,14 @@ namespace MemoAtlas_Backend.Api.Services;
 
 public class MemoService(IMemoRepository memoRepository, ITagService tagService, IPromptAnswerService promptAnswerService) : IMemoService
 {
-    public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, DateOnly? startDate, DateOnly? endDate)
+    public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter)
     {
-        if (startDate != null && endDate != null && startDate > endDate)
+        if (filter.StartDate != null && filter.EndDate != null && filter.StartDate > filter.EndDate)
         {
             throw new InvalidPayloadException("startDate cannot be later than endDate.");
         }
 
-        return await memoRepository.GetAllMemosAsync(user, startDate, endDate);
+        return await memoRepository.GetAllMemosAsync(user, filter);
     }
 
     public async Task<Memo> GetMemoAsync(User user, int memoId)
