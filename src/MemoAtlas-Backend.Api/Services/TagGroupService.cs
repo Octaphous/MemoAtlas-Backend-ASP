@@ -1,5 +1,4 @@
 using MemoAtlas_Backend.Api.Exceptions;
-using MemoAtlas_Backend.Api.Models;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
@@ -9,6 +8,11 @@ namespace MemoAtlas_Backend.Api.Services;
 
 public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroupService
 {
+    public static readonly HashSet<string> AllowedColors = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "red", "blue", "green", "yellow"
+        };
+
     public async Task<IEnumerable<TagGroup>> GetAllTagGroupsAsync(User user)
     {
         List<TagGroup> tagGroups = await tagGroupRepository.GetAllTagGroupsAsync(user);
@@ -36,7 +40,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
 
     public async Task<TagGroup> CreateTagGroupAsync(User user, TagGroupCreateRequest body)
     {
-        if (!AppConstants.AllowedTagColors.Contains(body.Color))
+        if (!AllowedColors.Contains(body.Color))
         {
             throw new InvalidPayloadException("Specified color is not allowed.");
         }
@@ -66,7 +70,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
 
         if (body.Color != null)
         {
-            if (!AppConstants.AllowedTagColors.Contains(body.Color))
+            if (!AllowedColors.Contains(body.Color))
             {
                 throw new InvalidPayloadException("Specified color is not allowed.");
             }

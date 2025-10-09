@@ -1,5 +1,6 @@
 using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Middleware;
+using MemoAtlas_Backend.Api.Models.Configurations;
 using MemoAtlas_Backend.Api.Repositories;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services;
@@ -7,6 +8,8 @@ using MemoAtlas_Backend.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection("AuthOptions"));
 
 builder.Services.AddControllers();
 

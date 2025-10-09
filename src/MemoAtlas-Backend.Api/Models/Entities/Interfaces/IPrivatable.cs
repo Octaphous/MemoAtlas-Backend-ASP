@@ -1,4 +1,4 @@
-namespace MemoAtlas_Backend.Api.Models;
+namespace MemoAtlas_Backend.Api.Models.Entities.Interfaces;
 
 public interface IPrivatable
 {

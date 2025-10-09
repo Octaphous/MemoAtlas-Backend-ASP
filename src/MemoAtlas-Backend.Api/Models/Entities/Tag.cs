@@ -1,4 +1,4 @@
-﻿using MemoAtlas_Backend.Api.Models;
+﻿using MemoAtlas_Backend.Api.Models.Entities.Interfaces;
 
 namespace MemoAtlas_Backend.Api.Models.Entities;
 

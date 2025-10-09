@@ -1,11 +1,8 @@
-using MemoAtlas_Backend.Api.Data;
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
-using MemoAtlas_Backend.Api.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace MemoAtlas_Backend.Api.Services;
 
