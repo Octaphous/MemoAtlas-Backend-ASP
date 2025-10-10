@@ -24,7 +24,7 @@ public static class TagMapper
         Private = tg.Private
     };
 
-    public static TagWithoutGroupDataDTO ToTagWithoutGroupDataDTO(Tag tg) => new()
+    public static TagWithoutGroupIdDTO ToTagWithoutGroupIdDTO(Tag tg) => new()
     {
         Id = tg.Id,
         Name = tg.Name,

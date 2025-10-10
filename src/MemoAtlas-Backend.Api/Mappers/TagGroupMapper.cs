@@ -18,7 +18,7 @@ public static class TagGroupMapper
         Id = tg.Id,
         Name = tg.Name,
         Color = tg.Color,
-        Tags = tg.Tags.Select(TagMapper.ToTagWithoutGroupDataDTO),
+        Tags = tg.Tags.Select(TagMapper.ToTagWithoutGroupIdDTO),
         Private = tg.Private
     };
 }

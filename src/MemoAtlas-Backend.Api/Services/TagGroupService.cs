@@ -1,5 +1,6 @@
 using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
+using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
@@ -13,19 +14,31 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
             "red", "blue", "green", "yellow"
         };
 
-    public async Task<IEnumerable<TagGroup>> GetAllTagGroupsAsync(User user)
+    public async Task<IEnumerable<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsWithTagCountDataAsync(User user)
     {
-        List<TagGroup> tagGroups = await tagGroupRepository.GetAllTagGroupsAsync(user);
+        List<TagGroupWithTagsWithCountsDTO> tagGroups =
+            await tagGroupRepository.GetAllTagGroupsWithTagCountDataAsync(user);
 
         if (!user.PrivateMode)
         {
-            foreach (TagGroup tg in tagGroups)
+            foreach (TagGroupWithTagsWithCountsDTO tg in tagGroups)
             {
                 tg.Tags = tg.Tags.Where(tag => !tag.Private).ToList();
             }
         }
 
         return tagGroups;
+    }
+
+    public async Task<TagGroupWithTagsWithCountsDTO> GetTagGroupWithTagCountDataAsync(User user, int id)
+    {
+        TagGroupWithTagsWithCountsDTO tagGroup =
+            await tagGroupRepository.GetTagGroupWithTagCountDataAsync(user, id)
+            ?? throw new InvalidResourceException("Tag group not found.");
+
+        tagGroup.Tags = tagGroup.Tags.Where(tag => !tag.Private || user.PrivateMode).ToList();
+
+        return tagGroup;
     }
 
     public async Task<TagGroup> GetTagGroupAsync(User user, int id)

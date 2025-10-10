@@ -35,12 +35,12 @@ public static class MemoMapper
                 Id = group.Key.Id,
                 Name = group.Key.Name,
                 Color = group.Key.Color,
-                Tags = group.Select(tag => new TagWithoutGroupDataDTO
+                Tags = group.Select(tag => new TagWithoutGroupIdDTO
                 {
                     Id = tag.Id,
                     Name = tag.Name,
                     Description = tag.Description,
-                    Private = tag.Private
+                    Private = tag.Private,
                 }),
                 Private = group.Key.Private
             }),

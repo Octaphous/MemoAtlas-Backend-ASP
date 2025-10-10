@@ -1,6 +1,7 @@
 using MemoAtlas_Backend.Api.Filters;
 using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
+using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,15 +16,19 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     [HttpGet]
     public async Task<IActionResult> GetAllTagGroups()
     {
-        IEnumerable<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
-        return Ok(tagGroups.Select(TagGroupMapper.ToTagGroupWithTagsDTO));
+        IEnumerable<TagGroupWithTagsWithCountsDTO> tagGroups =
+            await tagGroupService.GetAllTagGroupsWithTagCountDataAsync(auth.GetRequiredUser());
+
+        return Ok(tagGroups);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTagGroup(int id)
     {
-        TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
-        return Ok(TagGroupMapper.ToTagGroupWithTagsDTO(tagGroup));
+        TagGroupWithTagsWithCountsDTO tagGroup =
+            await tagGroupService.GetTagGroupWithTagCountDataAsync(auth.GetRequiredUser(), id);
+
+        return Ok(tagGroup);
     }
 
     [HttpPost]
