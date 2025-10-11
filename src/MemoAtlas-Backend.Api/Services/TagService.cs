@@ -12,8 +12,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
     {
         IEnumerable<Tag> tags = await tagRepository.GetAllTagsAsync(user);
 
-        // If user is not in private mode, remove any tags that are in a private tag group
-        tags = tags.Where(tag => !tag.TagGroup.Private || user.PrivateMode);
+        tags = tags.Where(tag => TagVisibleToUser(tag, user));
 
         return tags;
     }
@@ -32,8 +31,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
             throw new InvalidPayloadException("One or more of the provided tag IDs do not exist for this user.");
         }
 
-        // If user is not in private mode, remove any tags that are in a private tag group
-        tags = tags.Where(tag => !tag.TagGroup.Private || user.PrivateMode).ToList();
+        tags = tags.Where(tag => TagVisibleToUser(tag, user)).ToList();
 
         return tags;
     }
@@ -42,14 +40,12 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
     {
         Tag? tag = await tagRepository.GetTagAsync(user, id);
 
-        // If user is not in private mode, ensure the tag is not in a private tag group
-        if (tag == null || (tag.TagGroup.Private && !user.PrivateMode))
+        if (tag == null || TagVisibleToUser(tag, user) == false)
         {
             throw new InvalidResourceException("Tag not found.");
         }
 
-        // Remove all memos that are private if user is not in private mode
-        tag.Memos = tag.Memos.Where(m => !m.Private || user.PrivateMode).ToList();
+        tag.Memos = tag.Memos.Where(m => MemoVisibleToUser(m, user)).ToList();
 
         return tag;
     }
@@ -77,14 +73,12 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
     {
         Tag? tag = await tagRepository.GetTagAsync(user, id);
 
-        // If user is not in private mode, ensure the tag is not in a private tag group
-        if (tag == null || (tag.TagGroup.Private && !user.PrivateMode))
+        if (tag == null || TagVisibleToUser(tag, user) == false)
         {
             throw new InvalidResourceException("Tag not found.");
         }
 
-        // Remove all memos that are private if user is not in private mode
-        tag.Memos = tag.Memos.Where(m => !m.Private || user.PrivateMode).ToList();
+        tag.Memos = tag.Memos.Where(m => MemoVisibleToUser(m, user)).ToList();
 
         if (body.Name != null)
         {
@@ -110,5 +104,15 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
         Tag tag = await GetTagAsync(user, id);
         tagRepository.DeleteTag(tag);
         await tagRepository.SaveChangesAsync();
+    }
+
+    static bool TagVisibleToUser(Tag tag, User user)
+    {
+        return user.PrivateMode || !tag.Private && !tag.TagGroup.Private;
+    }
+
+    static bool MemoVisibleToUser(Memo memo, User user)
+    {
+        return user.PrivateMode || !memo.Private;
     }
 }
