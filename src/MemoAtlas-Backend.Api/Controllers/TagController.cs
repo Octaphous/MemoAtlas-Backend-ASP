@@ -16,7 +16,7 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     public async Task<IActionResult> GetAllTags()
     {
         IEnumerable<Tag> tags = await tagService.GetAllTagsAsync(auth.GetRequiredUser());
-        return Ok(tags.Select(TagMapper.ToDTO));
+        return Ok(tags.Select(TagMapper.ToTagWithGroupDTO));
     }
 
     [HttpGet("{id}")]

@@ -14,6 +14,15 @@ public static class TagMapper
         Private = tg.Private
     };
 
+    public static TagWithGroupDTO ToTagWithGroupDTO(Tag tg) => new()
+    {
+        Id = tg.Id,
+        Name = tg.Name,
+        Description = tg.Description,
+        Group = TagGroupMapper.ToDTO(tg.TagGroup),
+        Private = tg.Private
+    };
+
     public static TagWithGroupAndMemosDTO ToTagWithGroupAndMemosDTO(Tag tg) => new()
     {
         Id = tg.Id,

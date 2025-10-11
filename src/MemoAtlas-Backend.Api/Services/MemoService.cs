@@ -4,6 +4,7 @@ using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using MemoAtlas_Backend.Api.Services.Interfaces;
+using MemoAtlas_Backend.Api.Utilities;
 
 namespace MemoAtlas_Backend.Api.Services;
 
@@ -11,12 +12,9 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 {
     public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter)
     {
-        if (filter.StartDate != null && filter.EndDate != null && filter.StartDate > filter.EndDate)
-        {
-            throw new InvalidPayloadException("startDate cannot be later than endDate.");
-        }
+        Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
 
-        return await memoRepository.GetAllMemosAsync(user, filter);
+        return await memoRepository.GetAllMemosWithCountsAsync(user, filter);
     }
 
     public async Task<Memo> GetMemoAsync(User user, int memoId)

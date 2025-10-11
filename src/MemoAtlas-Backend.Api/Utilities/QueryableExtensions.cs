@@ -1,3 +1,4 @@
+using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Models.Entities.Interfaces;
 

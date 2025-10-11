@@ -16,17 +16,35 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     [HttpGet]
     public async Task<IActionResult> GetAllTagGroups()
     {
-        IEnumerable<TagGroupWithTagsWithCountsDTO> tagGroups =
-            await tagGroupService.GetAllTagGroupsWithTagCountDataAsync(auth.GetRequiredUser());
-
-        return Ok(tagGroups);
+        IEnumerable<TagGroup> tagGroups = await tagGroupService.GetAllTagGroupsAsync(auth.GetRequiredUser());
+        return Ok(tagGroups.Select(TagGroupMapper.ToTagGroupWithTagsDTO));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTagGroup(int id)
     {
+        TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(auth.GetRequiredUser(), id);
+        return Ok(TagGroupMapper.ToTagGroupWithTagsDTO(tagGroup));
+    }
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetAllTagGroupStats([FromQuery] TagGroupStatsFilter filter)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        IEnumerable<TagGroupWithTagsWithCountsDTO> tagGroups =
+            await tagGroupService.GetAllTagGroupsStatsAsync(auth.GetRequiredUser(), filter);
+
+        return Ok(tagGroups);
+    }
+
+    [HttpGet("{id}/stats")]
+    public async Task<IActionResult> GetTagGroupStats(int id, [FromQuery] TagGroupStatsFilter filter)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         TagGroupWithTagsWithCountsDTO tagGroup =
-            await tagGroupService.GetTagGroupWithTagCountDataAsync(auth.GetRequiredUser(), id);
+            await tagGroupService.GetTagGroupStatsAsync(auth.GetRequiredUser(), id, filter);
 
         return Ok(tagGroup);
     }

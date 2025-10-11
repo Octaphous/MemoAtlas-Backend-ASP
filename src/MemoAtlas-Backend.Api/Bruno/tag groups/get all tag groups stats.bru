@@ -1,0 +1,20 @@
+meta {
+  name: get all tag groups stats
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/tag-groups/stats?startDate=2025-10-01&endDate=2025-10-05
+  body: none
+  auth: inherit
+}
+
+params:query {
+  startDate: 2025-10-01
+  endDate: 2025-10-05
+}
+
+settings {
+  encodeUrl: true
+}

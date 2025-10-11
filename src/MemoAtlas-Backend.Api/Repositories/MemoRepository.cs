@@ -10,7 +10,7 @@ namespace MemoAtlas_Backend.Api.Repositories;
 
 public class MemoRepository(AppDbContext db) : IMemoRepository
 {
-    public async Task<List<MemoWithCountsDTO>> GetAllMemosAsync(User user, MemoFilterRequest filter)
+    public async Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter)
     {
         IQueryable<Memo> query = db.Memos
             .VisibleToUser(user)
