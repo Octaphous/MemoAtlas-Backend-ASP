@@ -80,17 +80,11 @@ namespace MemoAtlas_Backend.Api.Migrations
                     b.Property<int>("MemoId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double?>("NumberValue")
-                        .HasColumnType("REAL");
-
                     b.Property<bool>("Private")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PromptId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("TextValue")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -99,6 +93,8 @@ namespace MemoAtlas_Backend.Api.Migrations
                     b.HasIndex("PromptId");
 
                     b.ToTable("PromptAnswers");
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.Session", b =>
@@ -216,6 +212,27 @@ namespace MemoAtlas_Backend.Api.Migrations
                     b.ToTable("MemoTag");
                 });
 
+            modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerNumber", b =>
+                {
+                    b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
+
+                    b.Property<double>("Answer")
+                        .HasColumnType("REAL");
+
+                    b.ToTable("PromptAnswerNumbers");
+                });
+
+            modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerText", b =>
+                {
+                    b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.ToTable("PromptAnswerTexts");
+                });
+
             modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.Memo", b =>
                 {
                     b.HasOne("MemoAtlas_Backend.Api.Models.Entities.User", "User")
@@ -301,6 +318,24 @@ namespace MemoAtlas_Backend.Api.Migrations
                     b.HasOne("MemoAtlas_Backend.Api.Models.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerNumber", b =>
+                {
+                    b.HasOne("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer", null)
+                        .WithOne()
+                        .HasForeignKey("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerNumber", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerText", b =>
+                {
+                    b.HasOne("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer", null)
+                        .WithOne()
+                        .HasForeignKey("MemoAtlas_Backend.Api.Models.Entities.PromptAnswerText", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using MemoAtlas_Backend.Api.Models;
+using MemoAtlas_Backend.Api.Exceptions;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Services.Interfaces;
@@ -8,94 +8,96 @@ namespace MemoAtlas_Backend.Api.Services;
 
 public class PromptAnswerService(IPromptService promptService) : IPromptAnswerService
 {
-    public void SetUpdatedPromptAnswers(Memo memo, IEnumerable<PromptAnswerUpdateRequest> updatedAnswers)
+    public void SetUpdatedPromptAnswers(List<PromptAnswer> existingAnswers, IEnumerable<PromptAnswerUpdateRequest> updatedAnswers)
     {
-        HashSet<int> updatedAnswersIds = updatedAnswers
-            .Select(pa => pa.Id)
-            .ToHashSet();
+        HashSet<int> updatedIds = updatedAnswers.Select(pa => pa.Id).ToHashSet();
+        HashSet<int> existingIds = existingAnswers.Select(pa => pa.Id).ToHashSet();
 
-        HashSet<int> existingAnswersIds = memo.PromptAnswers
-            .Select(pa => pa.Id)
-            .ToHashSet();
-
-        if (updatedAnswersIds.Except(existingAnswersIds).Any())
+        if (updatedIds.Except(existingIds).Any())
         {
-            throw new InvalidOperationException("One or more of the provided prompt answer IDs do not exist for this memo.");
+            throw new InvalidPayloadException("One or more of the provided PromptAnswer IDs do not exist in the existing answers.");
         }
-
-        Dictionary<int, Prompt> prompts = memo.PromptAnswers
-            .Where(pa => updatedAnswersIds
-                .Contains(pa.Id))
-            .Select(pa => pa.Prompt)
-            .ToDictionary(p => p.Id);
-
-        Dictionary<int, PromptAnswer> existingAnswers = memo.PromptAnswers
-            .Where(pa => updatedAnswersIds
-                .Contains(pa.Id))
-            .ToDictionary(pa => pa.Id);
 
         foreach (PromptAnswerUpdateRequest update in updatedAnswers)
         {
-            PromptAnswer existing = existingAnswers[update.Id];
-
-            if (update.Value != null)
-            {
-                Prompt prompt = prompts[existing.PromptId];
-                (string? textValue, double? numberValue) = GetValidatedPromptValue(update.Value, prompt);
-                existing.TextValue = textValue;
-                existing.NumberValue = numberValue;
-            }
+            PromptAnswer existing = existingAnswers.First(pa => pa.Id == update.Id);
 
             if (update.Private != null)
             {
                 existing.Private = update.Private.Value;
             }
+
+            switch (existing)
+            {
+                case PromptAnswerText textAnswer when update is PromptAnswerTextUpdateRequest textUpdate:
+                    if (textUpdate.Answer != null)
+                    {
+                        textAnswer.Answer = textUpdate.Answer;
+                    }
+                    break;
+
+                case PromptAnswerNumber numberAnswer when update is PromptAnswerNumberUpdateRequest numberUpdate:
+                    if (numberUpdate.Answer != null)
+                    {
+                        numberAnswer.Answer = numberUpdate.Answer.Value;
+                    }
+                    break;
+
+                default:
+                    throw new InvalidPayloadException($"Mismatched PromptAnswer and UpdateRequest types for PromptAnswer ID {existing.Id}.");
+            }
         }
     }
 
+    // Verify that provided prompt answer value matches the prompt type, so that we for example don't try to store a text answer for a number prompt
+    public async Task ValidatePromptAnswerRequests(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
+    {
+        HashSet<int> answerPromptIds = promptAnswers.Select(pa => pa.PromptId).ToHashSet();
+        Dictionary<int, Prompt> prompts = (await promptService.GetPromptsAsync(user, answerPromptIds)).ToDictionary(p => p.Id);
+
+        foreach (PromptAnswerCreateRequest answer in promptAnswers)
+        {
+            Prompt prompt = prompts[answer.PromptId] ?? throw new InvalidResourceException($"Prompt with ID {answer.PromptId} not found.");
+
+            if (prompt.Type != answer.Type)
+            {
+                throw new InvalidPayloadException($"Prompt with ID {answer.PromptId} is of type {prompt.Type}, but received answer of type {answer.Type}.");
+            }
+        }
+    }
+
+    // Construct PromptAnswer database entities from request DTOs 
     public async Task<IEnumerable<PromptAnswer>> BuildPromptAnswersAsync(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
     {
-        HashSet<int> promptIds = promptAnswers
-            .Select(pa => pa.PromptId)
-            .ToHashSet();
-
-        Dictionary<int, Prompt> prompts = (await promptService
-            .GetPromptsAsync(user, promptIds))
-            .ToDictionary(p => p.Id);
-
         List<PromptAnswer> builtAnswers = [];
 
         foreach (PromptAnswerCreateRequest pa in promptAnswers)
         {
-            Prompt prompt = prompts[pa.PromptId]
-                ?? throw new InvalidOperationException($"Prompt with id {pa.PromptId} does not exist.");
-
-            (string? textValue, double? numberValue) = GetValidatedPromptValue(pa.Value, prompt);
-
-            builtAnswers.Add(new PromptAnswer
+            switch (pa)
             {
-                PromptId = prompt.Id,
-                TextValue = textValue,
-                NumberValue = numberValue,
-                Private = pa.Private
-            });
+                case PromptAnswerTextCreateRequest req:
+                    builtAnswers.Add(new PromptAnswerText
+                    {
+                        PromptId = req.PromptId,
+                        Answer = req.Answer,
+                        Private = req.Private
+                    });
+                    break;
+
+                case PromptAnswerNumberCreateRequest req:
+                    builtAnswers.Add(new PromptAnswerNumber
+                    {
+                        PromptId = req.PromptId,
+                        Answer = req.Answer,
+                        Private = req.Private
+                    });
+                    break;
+
+                default:
+                    throw new UnreachableException("Unknown PromptAnswerCreateRequest type.");
+            }
         }
 
         return builtAnswers;
-    }
-
-    public (string?, double?) GetValidatedPromptValue(object value, Prompt prompt)
-    {
-        return prompt.Type switch
-        {
-            PromptType.Text when value is string text => (text, null),
-
-            PromptType.Number when double.TryParse(value?.ToString(), out var number)
-                => (null, number),
-
-            PromptType.Text => throw new InvalidOperationException($"Prompt with ID {prompt.Id} requires a text value."),
-            PromptType.Number => throw new InvalidOperationException($"Prompt with ID {prompt.Id} requires a numeric value."),
-            _ => throw new UnreachableException($"Unsupported prompt type for prompt with ID {prompt.Id}.")
-        };
     }
 }

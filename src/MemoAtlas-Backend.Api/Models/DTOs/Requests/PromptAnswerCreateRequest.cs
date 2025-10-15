@@ -1,18 +1,15 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using MemoAtlas_Backend.Api.Converters;
 
 namespace MemoAtlas_Backend.Api.Models.DTOs.Requests;
 
-public class PromptAnswerCreateRequest
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonDerivedType(typeof(PromptAnswerNumberCreateRequest), (int)PromptType.Number)]
+[JsonDerivedType(typeof(PromptAnswerTextCreateRequest), (int)PromptType.Text)]
+public abstract class PromptAnswerCreateRequest(PromptType type)
 {
-    [Required]
+    public PromptType Type { get; set; } = type;
+
     public required int PromptId { get; set; }
 
-    [Required]
-    [JsonConverter(typeof(JSONObjectConverter))]
-    public required object Value { get; set; }
-
-    [Required]
     public required bool Private { get; set; }
 }

@@ -1,4 +1,4 @@
-using MemoAtlas_Backend.Api.Models;
+using System.Diagnostics;
 using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 
@@ -6,28 +6,26 @@ namespace MemoAtlas_Backend.Api.Mappers;
 
 public static class PromptAnswerMapper
 {
-    public static PromptAnswerDTO ToDTO(PromptAnswer pa) => new()
+    public static PromptAnswerDTO ToDTO(PromptAnswer pa) => pa switch
     {
-        Id = pa.Id,
-        Value = pa.Prompt.Type switch
+        PromptAnswerText pat => new PromptAnswerTextDTO
         {
-            PromptType.Text => pa.TextValue,
-            PromptType.Number => pa.NumberValue,
-            _ => null
+            Id = pat.Id,
+            Private = pat.Private,
+            Answer = pat.Answer
         },
-        Private = pa.Private
+        PromptAnswerNumber pan => new PromptAnswerNumberDTO
+        {
+            Id = pan.Id,
+            Private = pan.Private,
+            Answer = pan.Answer
+        },
+        _ => throw new UnreachableException("Unknown PromptAnswer type")
     };
 
     public static PromptAnswerWithPromptDTO ToPromptAnswerWithPromptDTO(PromptAnswer pa) => new()
     {
-        Id = pa.Id,
-        Prompt = PromptMapper.ToDTO(pa.Prompt),
-        Value = pa.Prompt.Type switch
-        {
-            PromptType.Text => pa.TextValue,
-            PromptType.Number => pa.NumberValue,
-            _ => null
-        },
-        Private = pa.Private
+        Data = ToDTO(pa),
+        Prompt = PromptMapper.ToDTO(pa.Prompt)
     };
 }

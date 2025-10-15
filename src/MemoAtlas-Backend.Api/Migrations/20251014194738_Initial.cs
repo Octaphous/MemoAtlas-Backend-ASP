@@ -121,8 +121,6 @@ namespace MemoAtlas_Backend.Api.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     MemoId = table.Column<int>(type: "INTEGER", nullable: false),
                     PromptId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TextValue = table.Column<string>(type: "TEXT", nullable: true),
-                    NumberValue = table.Column<double>(type: "REAL", nullable: true),
                     Private = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -160,6 +158,44 @@ namespace MemoAtlas_Backend.Api.Migrations
                         name: "FK_Tags_TagGroups_TagGroupId",
                         column: x => x.TagGroupId,
                         principalTable: "TagGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PromptAnswerNumbers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Answer = table.Column<double>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PromptAnswerNumbers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PromptAnswerNumbers_PromptAnswers_Id",
+                        column: x => x.Id,
+                        principalTable: "PromptAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PromptAnswerTexts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Answer = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PromptAnswerTexts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PromptAnswerTexts_PromptAnswers_Id",
+                        column: x => x.Id,
+                        principalTable: "PromptAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -237,7 +273,10 @@ namespace MemoAtlas_Backend.Api.Migrations
                 name: "MemoTag");
 
             migrationBuilder.DropTable(
-                name: "PromptAnswers");
+                name: "PromptAnswerNumbers");
+
+            migrationBuilder.DropTable(
+                name: "PromptAnswerTexts");
 
             migrationBuilder.DropTable(
                 name: "Sessions");
@@ -246,13 +285,16 @@ namespace MemoAtlas_Backend.Api.Migrations
                 name: "Tags");
 
             migrationBuilder.DropTable(
+                name: "PromptAnswers");
+
+            migrationBuilder.DropTable(
+                name: "TagGroups");
+
+            migrationBuilder.DropTable(
                 name: "Memos");
 
             migrationBuilder.DropTable(
                 name: "Prompts");
-
-            migrationBuilder.DropTable(
-                name: "TagGroups");
 
             migrationBuilder.DropTable(
                 name: "Users");
