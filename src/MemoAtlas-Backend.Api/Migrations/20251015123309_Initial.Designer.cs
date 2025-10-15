@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoAtlas_Backend.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251014194738_Initial")]
+    [Migration("20251015123309_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -219,7 +219,7 @@ namespace MemoAtlas_Backend.Api.Migrations
                 {
                     b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
 
-                    b.Property<double>("Answer")
+                    b.Property<double>("Number")
                         .HasColumnType("REAL");
 
                     b.ToTable("PromptAnswerNumbers");
@@ -229,7 +229,7 @@ namespace MemoAtlas_Backend.Api.Migrations
                 {
                     b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
 
-                    b.Property<string>("Answer")
+                    b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

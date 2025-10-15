@@ -64,7 +64,7 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         memoRepository.AddMemo(memo);
         await memoRepository.SaveChangesAsync();
 
-        return memo;
+        return await GetMemoAsync(user, memo.Id);
     }
 
     public async Task<Memo> UpdateMemoAsync(User user, int memoId, MemoUpdateRequest body)
@@ -129,7 +129,7 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         }
 
         await memoRepository.SaveChangesAsync();
-        return memo;
+        return await GetMemoAsync(user, memoId);
     }
 
     public async Task DeleteMemoAsync(User user, int memoId)

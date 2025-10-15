@@ -12,20 +12,14 @@ public static class PromptAnswerMapper
         {
             Id = pat.Id,
             Private = pat.Private,
-            Answer = pat.Answer
+            Text = pat.Text
         },
         PromptAnswerNumber pan => new PromptAnswerNumberDTO
         {
             Id = pan.Id,
             Private = pan.Private,
-            Answer = pan.Answer
+            Number = pan.Number
         },
         _ => throw new UnreachableException("Unknown PromptAnswer type")
-    };
-
-    public static PromptAnswerWithPromptDTO ToPromptAnswerWithPromptDTO(PromptAnswer pa) => new()
-    {
-        Data = ToDTO(pa),
-        Prompt = PromptMapper.ToDTO(pa.Prompt)
     };
 }

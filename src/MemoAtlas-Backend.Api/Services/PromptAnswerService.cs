@@ -30,16 +30,16 @@ public class PromptAnswerService(IPromptService promptService) : IPromptAnswerSe
             switch (existing)
             {
                 case PromptAnswerText textAnswer when update is PromptAnswerTextUpdateRequest textUpdate:
-                    if (textUpdate.Answer != null)
+                    if (textUpdate.Text != null)
                     {
-                        textAnswer.Answer = textUpdate.Answer;
+                        textAnswer.Text = textUpdate.Text;
                     }
                     break;
 
                 case PromptAnswerNumber numberAnswer when update is PromptAnswerNumberUpdateRequest numberUpdate:
-                    if (numberUpdate.Answer != null)
+                    if (numberUpdate.Number != null)
                     {
-                        numberAnswer.Answer = numberUpdate.Answer.Value;
+                        numberAnswer.Number = numberUpdate.Number.Value;
                     }
                     break;
 
@@ -79,7 +79,7 @@ public class PromptAnswerService(IPromptService promptService) : IPromptAnswerSe
                     builtAnswers.Add(new PromptAnswerText
                     {
                         PromptId = req.PromptId,
-                        Answer = req.Answer,
+                        Text = req.Text,
                         Private = req.Private
                     });
                     break;
@@ -88,7 +88,7 @@ public class PromptAnswerService(IPromptService promptService) : IPromptAnswerSe
                     builtAnswers.Add(new PromptAnswerNumber
                     {
                         PromptId = req.PromptId,
-                        Answer = req.Answer,
+                        Number = req.Number,
                         Private = req.Private
                     });
                     break;

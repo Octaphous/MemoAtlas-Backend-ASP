@@ -18,13 +18,13 @@ public static class PromptMapper
         Id = prompt.Id,
         Question = prompt.Question,
         Type = prompt.Type,
-        Memos = prompt.PromptAnswers.Select(pa => new MemoWithPromptAnswerDTO()
+        Memos = prompt.PromptAnswers.GroupBy(pa => pa.Memo).Select(g => new MemoWithPromptAnswerDTO
         {
-            Id = pa.Memo.Id,
-            Title = pa.Memo.Title,
-            Date = pa.Memo.Date,
-            PromptAnswer = PromptAnswerMapper.ToDTO(pa),
-            Private = pa.Memo.Private
+            Id = g.Key.Id,
+            Title = g.Key.Title,
+            Date = g.Key.Date,
+            Private = g.Key.Private,
+            Answers = g.Select(PromptAnswerMapper.ToDTO)
         }),
         Private = prompt.Private
     };

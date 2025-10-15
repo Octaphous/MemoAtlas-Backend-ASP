@@ -66,7 +66,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
         await tagRepository.SaveChangesAsync();
         tag.TagGroup = tagGroup;
 
-        return tag;
+        return await GetTagAsync(user, tag.Id);
     }
 
     public async Task<Tag> UpdateTagAsync(User user, int id, TagUpdateRequest body)
@@ -96,7 +96,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
         }
 
         await tagRepository.SaveChangesAsync();
-        return tag;
+        return await GetTagAsync(user, id);
     }
 
     public async Task DeleteTagAsync(User user, int id)

@@ -28,23 +28,22 @@ public static class MemoMapper
         Id = memo.Id,
         Title = memo.Title,
         Date = memo.Date,
-        TagGroups = memo.Tags
-            .GroupBy(tag => tag.TagGroup)
-            .Select(group => new TagGroupWithTagsDTO
-            {
-                Id = group.Key.Id,
-                Name = group.Key.Name,
-                Color = group.Key.Color,
-                Tags = group.Select(tag => new TagWithoutGroupIdDTO
-                {
-                    Id = tag.Id,
-                    Name = tag.Name,
-                    Description = tag.Description,
-                    Private = tag.Private,
-                }),
-                Private = group.Key.Private
-            }),
-        PromptAnswers = memo.PromptAnswers.Select(PromptAnswerMapper.ToPromptAnswerWithPromptDTO),
+        TagGroups = memo.Tags.GroupBy(tag => tag.TagGroup).Select(group => new TagGroupWithTagsDTO
+        {
+            Id = group.Key.Id,
+            Name = group.Key.Name,
+            Color = group.Key.Color,
+            Tags = group.Select(TagMapper.ToTagWithoutGroupIdDTO),
+            Private = group.Key.Private
+        }),
+        Prompts = memo.PromptAnswers.GroupBy(pa => pa.Prompt).Select(g => new PromptWithAnswerDTO
+        {
+            Id = g.Key.Id,
+            Question = g.Key.Question,
+            Type = g.Key.Type,
+            Private = g.Key.Private,
+            Answers = g.Select(PromptAnswerMapper.ToDTO)
+        }),
         Private = memo.Private
     };
 }

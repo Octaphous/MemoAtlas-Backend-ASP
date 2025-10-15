@@ -29,7 +29,7 @@ public class SessionService(ISessionRepository sessionRepository, IOptions<AuthO
         sessionRepository.AddSession(session);
         await sessionRepository.SaveChangesAsync();
 
-        return session;
+        return await GetSessionByTokenAsync(session.Token);
     }
 
     public async Task DeleteSessionAsync(string token)

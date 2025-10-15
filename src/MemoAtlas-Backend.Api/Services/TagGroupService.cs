@@ -83,7 +83,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         tagGroupRepository.AddTagGroup(tagGroup);
         await tagGroupRepository.SaveChangesAsync();
 
-        return tagGroup;
+        return await GetTagGroupAsync(user, tagGroup.Id);
     }
 
     public async Task<TagGroup> UpdateTagGroupAsync(User user, int id, TagGroupUpdateRequest body)
@@ -110,7 +110,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         }
 
         await tagGroupRepository.SaveChangesAsync();
-        return tagGroup;
+        return await GetTagGroupAsync(user, tagGroup.Id);
     }
 
     public async Task DeleteTagGroupAsync(User user, int id)

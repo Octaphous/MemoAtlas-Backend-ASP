@@ -216,7 +216,7 @@ namespace MemoAtlas_Backend.Api.Migrations
                 {
                     b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
 
-                    b.Property<double>("Answer")
+                    b.Property<double>("Number")
                         .HasColumnType("REAL");
 
                     b.ToTable("PromptAnswerNumbers");
@@ -226,7 +226,7 @@ namespace MemoAtlas_Backend.Api.Migrations
                 {
                     b.HasBaseType("MemoAtlas_Backend.Api.Models.Entities.PromptAnswer");
 
-                    b.Property<string>("Answer")
+                    b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

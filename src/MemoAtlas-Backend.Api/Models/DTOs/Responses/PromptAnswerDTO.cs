@@ -8,6 +8,5 @@ namespace MemoAtlas_Backend.Api.Models.DTOs.Responses;
 public abstract class PromptAnswerDTO
 {
     public required int Id { get; set; }
-
     public required bool Private { get; set; }
 }

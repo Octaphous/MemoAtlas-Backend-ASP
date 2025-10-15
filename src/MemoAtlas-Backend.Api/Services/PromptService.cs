@@ -61,7 +61,7 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
         promptRepository.AddPrompt(prompt);
         await promptRepository.SaveChangesAsync();
 
-        return prompt;
+        return await GetPromptAsync(user, prompt.Id);
     }
 
     public async Task<Prompt> UpdatePromptAsync(User user, int id, PromptUpdateRequest body)
@@ -79,7 +79,7 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
         }
 
         await promptRepository.SaveChangesAsync();
-        return prompt;
+        return await GetPromptAsync(user, id);
     }
 
     public async Task DeletePromptAsync(User user, int id)
