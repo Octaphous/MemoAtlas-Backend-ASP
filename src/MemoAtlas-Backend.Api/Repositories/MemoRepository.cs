@@ -13,6 +13,7 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
     public async Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter)
     {
         IQueryable<Memo> query = db.Memos
+            .AsNoTracking()
             .VisibleToUser(user)
             .Where(m => m.UserId == user.Id);
 

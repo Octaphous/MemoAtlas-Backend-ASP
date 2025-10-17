@@ -1,6 +1,7 @@
 using MemoAtlas_Backend.Api.Filters;
 using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
+using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace MemoAtlas_Backend.Api.Controllers;
 [Route("api/prompts")]
 [AuthRequired]
 [ApiController]
-public class PromptController(IUserContext auth, IPromptService promptService) : ControllerBase
+public class PromptController(IUserContext auth, IPromptService promptService, IPromptStatsService promptStatsService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAllPrompts()
@@ -24,6 +25,15 @@ public class PromptController(IUserContext auth, IPromptService promptService) :
     {
         Prompt prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
         return Ok(PromptMapper.ToPromptWithMemosDTO(prompt));
+    }
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetPromptStats([FromQuery] PromptStatsFilterRequest filter)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        PromptStatsAllDTO stats = await promptStatsService.GetAllPromptStatsAsync(auth.GetRequiredUser(), filter);
+        return Ok(stats);
     }
 
     [HttpPost]

@@ -28,7 +28,7 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     }
 
     [HttpGet("stats")]
-    public async Task<IActionResult> GetAllTagGroupStats([FromQuery] TagGroupStatsFilter filter)
+    public async Task<IActionResult> GetAllTagGroupStats([FromQuery] TagGroupStatsFilterRequest filter)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -39,7 +39,7 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
     }
 
     [HttpGet("{id}/stats")]
-    public async Task<IActionResult> GetTagGroupStats(int id, [FromQuery] TagGroupStatsFilter filter)
+    public async Task<IActionResult> GetTagGroupStats(int id, [FromQuery] TagGroupStatsFilterRequest filter)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

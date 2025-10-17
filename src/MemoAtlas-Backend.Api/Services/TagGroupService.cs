@@ -37,7 +37,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         return tagGroup;
     }
 
-    public async Task<IEnumerable<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsStatsAsync(User user, TagGroupStatsFilter filter)
+    public async Task<IEnumerable<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsStatsAsync(User user, TagGroupStatsFilterRequest filter)
     {
         Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
 
@@ -52,12 +52,12 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         return tagGroups;
     }
 
-    public async Task<TagGroupWithTagsWithCountsDTO> GetTagGroupStatsAsync(User user, int id, TagGroupStatsFilter filter)
+    public async Task<TagGroupWithTagsWithCountsDTO> GetTagGroupStatsAsync(User user, int id, TagGroupStatsFilterRequest filter)
     {
         Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
 
         TagGroupWithTagsWithCountsDTO tagGroup =
-            await tagGroupRepository.GetTagGroupStatsAsync(user, filter, id)
+            await tagGroupRepository.GetTagGroupStatsAsync(user, id, filter)
             ?? throw new InvalidResourceException("Tag group not found.");
 
         tagGroup.Tags = tagGroup.Tags.Where(tag => !tag.Private || user.PrivateMode).ToList();

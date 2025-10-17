@@ -31,6 +31,7 @@ builder.Services.AddScoped<ITagGroupRepository, TagGroupRepository>();
 builder.Services.AddScoped<IPromptRepository, PromptRepository>();
 builder.Services.AddScoped<IMemoRepository, MemoRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IPromptStatsRepository, PromptStatsRepository>();
 
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -40,6 +41,7 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IPromptService, PromptService>();
 builder.Services.AddScoped<IPromptAnswerService, PromptAnswerService>();
 builder.Services.AddScoped<IMemoService, MemoService>();
+builder.Services.AddScoped<IPromptStatsService, PromptStatsService>();
 
 var app = builder.Build();
 

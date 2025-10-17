@@ -1,4 +1,5 @@
-﻿using MemoAtlas_Backend.Api.Models.Configurations;
+﻿using MemoAtlas_Backend.Api.Exceptions;
+using MemoAtlas_Backend.Api.Models.Configurations;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Services.Interfaces;
@@ -46,7 +47,11 @@ public class AuthController(IUserService userService, ISessionService sessionSer
         if (Request.Cookies.TryGetValue(authOptions.Value.SessionTokenName, out string? token))
         {
             Response.Cookies.Delete(authOptions.Value.SessionTokenName);
-            await sessionService.DeleteSessionAsync(token);
+            try
+            {
+                await sessionService.DeleteSessionAsync(token);
+            }
+            catch (InvalidResourceException) { }
         }
 
         return Ok();

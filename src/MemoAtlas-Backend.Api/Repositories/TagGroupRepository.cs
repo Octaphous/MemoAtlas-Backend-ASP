@@ -29,13 +29,15 @@ public class TagGroupRepository(AppDbContext db) : ITagGroupRepository
             .FirstOrDefaultAsync();
     }
 
-    public IQueryable<TagGroupWithTagsWithCountsDTO> TagGroupStatsQuery(User user, TagGroupStatsFilter filter, int? tagGroupId = null)
+    // Count how many times each tag in each tag group (or a specific tag group) has been used within the filter (date range)
+    public IQueryable<TagGroupWithTagsWithCountsDTO> TagGroupStatsQuery(User user, TagGroupStatsFilterRequest filter, int? tagGroupId = null)
     {
         Expression<Func<Memo, bool>> inDateRange = m =>
             (filter.StartDate == null || m.Date >= filter.StartDate) &&
             (filter.EndDate == null || m.Date <= filter.EndDate);
 
         IQueryable<TagGroup> query = db.TagGroups
+            .AsNoTracking()
             .VisibleToUser(user)
             .Include(tg => tg.Tags)
             .Where(tg => tg.UserId == user.Id);
@@ -51,24 +53,25 @@ public class TagGroupRepository(AppDbContext db) : ITagGroupRepository
             Name = tg.Name,
             Color = tg.Color,
             Private = tg.Private,
-            Tags = tg.Tags.Where(tag => tag.Memos.AsQueryable().Any(inDateRange)) // We dont need to list memos outside of the date range because count will be 0
-            .Select(tag => new TagWithCountAndWithoutGroupIdDTO
-            {
-                Id = tag.Id,
-                Name = tag.Name,
-                Description = tag.Description,
-                Private = tag.Private,
-                Count = tag.Memos.AsQueryable().Count(inDateRange)
-            })
+            Tags = tg.Tags
+                .Where(tag => tag.Memos.AsQueryable().Any(inDateRange)) // We dont need to list tags that have no memos in the date range (because count will be 0)
+                .Select(tag => new TagWithCountAndWithoutGroupIdDTO
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    Description = tag.Description,
+                    Private = tag.Private,
+                    Count = tag.Memos.AsQueryable().Count(inDateRange) // How many memos with this tag are in the date range
+                })
         });
     }
 
-    public async Task<List<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsStatsAsync(User user, TagGroupStatsFilter filter)
+    public async Task<List<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsStatsAsync(User user, TagGroupStatsFilterRequest filter)
     {
         return await TagGroupStatsQuery(user, filter).ToListAsync();
     }
 
-    public async Task<TagGroupWithTagsWithCountsDTO?> GetTagGroupStatsAsync(User user, TagGroupStatsFilter filter, int id)
+    public async Task<TagGroupWithTagsWithCountsDTO?> GetTagGroupStatsAsync(User user, int id, TagGroupStatsFilterRequest filter)
     {
         return await TagGroupStatsQuery(user, filter, id).FirstOrDefaultAsync();
     }

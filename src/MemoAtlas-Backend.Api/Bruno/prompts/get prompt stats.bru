@@ -1,17 +1,13 @@
 meta {
-  name: delete prompt
+  name: get prompt stats
   type: http
-  seq: 6
+  seq: 3
 }
 
-delete {
-  url: {{host}}/api/prompts/:id
+get {
+  url: {{host}}/api/prompts/stats
   body: none
   auth: inherit
-}
-
-params:path {
-  id: 1
 }
 
 settings {
