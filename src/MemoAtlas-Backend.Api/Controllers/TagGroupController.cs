@@ -38,17 +38,6 @@ public class TagGroupController(IUserContext auth, ITagGroupService tagGroupServ
         return Ok(tagGroups);
     }
 
-    [HttpGet("{id}/stats")]
-    public async Task<IActionResult> GetTagGroupStats(int id, [FromQuery] TagGroupStatsFilterRequest filter)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
-        TagGroupWithTagsWithCountsDTO tagGroup =
-            await tagGroupService.GetTagGroupStatsAsync(auth.GetRequiredUser(), id, filter);
-
-        return Ok(tagGroup);
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateTagGroup([FromBody] TagGroupCreateRequest body)
     {

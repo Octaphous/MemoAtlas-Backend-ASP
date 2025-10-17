@@ -41,7 +41,7 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
     {
         Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
 
-        List<TagGroupWithTagsWithCountsDTO> tagGroups =
+        IEnumerable<TagGroupWithTagsWithCountsDTO> tagGroups =
             await tagGroupRepository.GetAllTagGroupsStatsAsync(user, filter);
 
         foreach (TagGroupWithTagsWithCountsDTO tg in tagGroups)
@@ -50,19 +50,6 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         }
 
         return tagGroups;
-    }
-
-    public async Task<TagGroupWithTagsWithCountsDTO> GetTagGroupStatsAsync(User user, int id, TagGroupStatsFilterRequest filter)
-    {
-        Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
-
-        TagGroupWithTagsWithCountsDTO tagGroup =
-            await tagGroupRepository.GetTagGroupStatsAsync(user, id, filter)
-            ?? throw new InvalidResourceException("Tag group not found.");
-
-        tagGroup.Tags = tagGroup.Tags.Where(tag => !tag.Private || user.PrivateMode).ToList();
-
-        return tagGroup;
     }
 
     public async Task<TagGroup> CreateTagGroupAsync(User user, TagGroupCreateRequest body)

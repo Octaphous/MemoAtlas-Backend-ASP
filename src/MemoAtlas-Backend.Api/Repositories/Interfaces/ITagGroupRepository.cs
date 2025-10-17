@@ -10,7 +10,6 @@ public interface ITagGroupRepository
     Task<TagGroup?> GetTagGroupAsync(User user, int id);
 
     Task<List<TagGroupWithTagsWithCountsDTO>> GetAllTagGroupsStatsAsync(User user, TagGroupStatsFilterRequest filter);
-    Task<TagGroupWithTagsWithCountsDTO?> GetTagGroupStatsAsync(User user, int id, TagGroupStatsFilterRequest filter);
 
     void AddTagGroup(TagGroup tagGroup);
     void DeleteTagGroup(TagGroup tagGroup);
