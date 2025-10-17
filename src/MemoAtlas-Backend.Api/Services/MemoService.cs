@@ -47,8 +47,8 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         List<PromptAnswer> promptAnswers = [];
         if (body.PromptAnswers != null)
         {
-            await promptAnswerService.ValidatePromptAnswerRequests(user, body.PromptAnswers);
-            promptAnswers = (await promptAnswerService.BuildPromptAnswersAsync(user, body.PromptAnswers)).ToList();
+            await promptAnswerService.ValidatePromptAnswerRequestsAsync(user, body.PromptAnswers);
+            promptAnswers = promptAnswerService.BuildPromptAnswers(user, body.PromptAnswers).ToList();
         }
 
         Memo memo = new()
@@ -113,8 +113,8 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 
         if (body.PromptAnswers?.Add != null)
         {
-            await promptAnswerService.ValidatePromptAnswerRequests(user, body.PromptAnswers.Add);
-            IEnumerable<PromptAnswer> promptAnswers = await promptAnswerService.BuildPromptAnswersAsync(user, body.PromptAnswers.Add);
+            await promptAnswerService.ValidatePromptAnswerRequestsAsync(user, body.PromptAnswers.Add);
+            IEnumerable<PromptAnswer> promptAnswers = promptAnswerService.BuildPromptAnswers(user, body.PromptAnswers.Add);
             memo.PromptAnswers.AddRange(promptAnswers);
         }
 

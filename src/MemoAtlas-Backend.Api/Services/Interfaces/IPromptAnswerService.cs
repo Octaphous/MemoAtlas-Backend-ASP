@@ -6,6 +6,6 @@ namespace MemoAtlas_Backend.Api.Services.Interfaces;
 public interface IPromptAnswerService
 {
     void SetUpdatedPromptAnswers(List<PromptAnswer> existingAnswers, IEnumerable<PromptAnswerUpdateRequest> updatedAnswers);
-    Task ValidatePromptAnswerRequests(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers);
-    Task<IEnumerable<PromptAnswer>> BuildPromptAnswersAsync(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers);
+    Task ValidatePromptAnswerRequestsAsync(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers);
+    IEnumerable<PromptAnswer> BuildPromptAnswers(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers);
 }

@@ -50,7 +50,7 @@ public class PromptAnswerService(IPromptService promptService) : IPromptAnswerSe
     }
 
     // Verify that provided prompt answer value matches the prompt type, so that we for example don't try to store a text answer for a number prompt
-    public async Task ValidatePromptAnswerRequests(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
+    public async Task ValidatePromptAnswerRequestsAsync(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
     {
         HashSet<int> answerPromptIds = promptAnswers.Select(pa => pa.PromptId).ToHashSet();
         Dictionary<int, Prompt> prompts = (await promptService.GetPromptsAsync(user, answerPromptIds)).ToDictionary(p => p.Id);
@@ -67,7 +67,7 @@ public class PromptAnswerService(IPromptService promptService) : IPromptAnswerSe
     }
 
     // Construct PromptAnswer database entities from request DTOs 
-    public async Task<IEnumerable<PromptAnswer>> BuildPromptAnswersAsync(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
+    public IEnumerable<PromptAnswer> BuildPromptAnswers(User user, IEnumerable<PromptAnswerCreateRequest> promptAnswers)
     {
         List<PromptAnswer> builtAnswers = [];
 
