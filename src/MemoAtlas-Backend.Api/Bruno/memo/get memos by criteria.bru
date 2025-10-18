@@ -1,0 +1,23 @@
+meta {
+  name: get memos by criteria
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host}}/api/memos/matches-criteria?startDate=20&endDate=20
+  body: none
+  auth: inherit
+}
+
+params:query {
+  startDate: 20
+  endDate: 20
+  ~tagIds: 1
+  ~promptIds: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

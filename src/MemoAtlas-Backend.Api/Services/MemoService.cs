@@ -1,4 +1,5 @@
 using MemoAtlas_Backend.Api.Exceptions;
+using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
@@ -8,7 +9,7 @@ using MemoAtlas_Backend.Api.Utilities;
 
 namespace MemoAtlas_Backend.Api.Services;
 
-public class MemoService(IMemoRepository memoRepository, ITagService tagService, IPromptAnswerService promptAnswerService) : IMemoService
+public class MemoService(IMemoRepository memoRepository, ITagService tagService, IPromptAnswerService promptAnswerService, IPromptService promptService) : IMemoService
 {
     public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter)
     {
@@ -28,6 +29,22 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         }
 
         return memo;
+    }
+
+    public async Task<MemosFromCriteriaDTO> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter)
+    {
+        Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
+
+        IEnumerable<Tag> requestedTags = await tagService.GetTagsAsync(user, filter.TagIds ?? []);
+        IEnumerable<Prompt> requestedPrompts = await promptService.GetPromptsAsync(user, filter.PromptIds ?? []);
+        IEnumerable<Memo> memos = await memoRepository.GetMemosByCriteriaAsync(user, filter);
+
+        return new MemosFromCriteriaDTO
+        {
+            RequestedTags = requestedTags.Select(TagMapper.ToTagWithGroupDTO),
+            RequestedPrompts = requestedPrompts.Select(PromptMapper.ToDTO),
+            Memos = memos.Select(MemoMapper.ToMemoWithTagsAndAnswersDTO)
+        };
     }
 
     public async Task<List<Memo>> SearchMemosAsync(User user, string query)

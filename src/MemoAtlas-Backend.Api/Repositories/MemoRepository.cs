@@ -27,11 +27,6 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             query = query.Where(m => m.Date <= filter.EndDate);
         }
 
-        if (filter.TagIds != null && filter.TagIds.Count > 0)
-        {
-            query = query.Where(m => m.Tags.All(t => filter.TagIds.Contains(t.Id)));
-        }
-
         return await query
             .OrderByDescending(m => m.Date)
             .Select(m => new MemoWithCountsDTO
@@ -56,6 +51,40 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .Include(m => m.PromptAnswers)
                 .ThenInclude(pa => pa.Prompt)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<Memo>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter)
+    {
+        IQueryable<Memo> query = db.Memos
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id);
+
+        if (filter.StartDate != null)
+        {
+            query = query.Where(m => m.Date >= filter.StartDate);
+        }
+
+        if (filter.EndDate != null)
+        {
+            query = query.Where(m => m.Date <= filter.EndDate);
+        }
+
+        if (filter.TagIds != null && filter.TagIds.Count > 0)
+        {
+            query = query.Where(m => m.Tags.Any(t => filter.TagIds.Contains(t.Id)));
+        }
+
+        if (filter.PromptIds != null && filter.PromptIds.Count > 0)
+        {
+            query = query.Where(m => m.PromptAnswers.Any(pa => filter.PromptIds.Contains(pa.PromptId)));
+        }
+
+        return await query
+            .Include(m => m.Tags)
+                .ThenInclude(t => t.TagGroup)
+            .Include(m => m.PromptAnswers)
+                .ThenInclude(pa => pa.Prompt)
+            .ToListAsync();
     }
 
     public async Task<List<Memo>> GetMemosBySearchAsync(User user, string query)
