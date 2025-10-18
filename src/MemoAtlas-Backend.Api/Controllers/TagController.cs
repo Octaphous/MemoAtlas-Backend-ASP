@@ -23,7 +23,7 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
     public async Task<IActionResult> GetTag(int id)
     {
         Tag tag = await tagService.GetTagAsync(auth.GetRequiredUser(), id);
-        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
+        return Ok(TagMapper.ToTagWithGroupDTO(tag));
     }
 
     [HttpPost]
@@ -32,7 +32,7 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Tag tag = await tagService.CreateTagAsync(auth.GetRequiredUser(), body);
-        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
+        return Ok(TagMapper.ToTagWithGroupDTO(tag));
     }
 
     [HttpPatch("{id}")]
@@ -41,7 +41,7 @@ public class TagController(IUserContext auth, ITagService tagService) : Controll
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         Tag tag = await tagService.UpdateTagAsync(auth.GetRequiredUser(), id, body);
-        return Ok(TagMapper.ToTagWithGroupAndMemosDTO(tag));
+        return Ok(TagMapper.ToTagWithGroupDTO(tag));
     }
 
     [HttpDelete("{id}")]

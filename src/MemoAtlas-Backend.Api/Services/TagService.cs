@@ -45,8 +45,6 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
             throw new InvalidResourceException("Tag not found.");
         }
 
-        tag.Memos = tag.Memos.Where(m => MemoVisibleToUser(m, user)).ToList();
-
         return tag;
     }
 
@@ -78,14 +76,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
 
     public async Task<Tag> UpdateTagAsync(User user, int id, TagUpdateRequest body)
     {
-        Tag? tag = await tagRepository.GetTagAsync(user, id);
-
-        if (tag == null || TagVisibleToUser(tag, user) == false)
-        {
-            throw new InvalidResourceException("Tag not found.");
-        }
-
-        tag.Memos = tag.Memos.Where(m => MemoVisibleToUser(m, user)).ToList();
+        Tag tag = await GetTagAsync(user, id);
 
         if (body.Name != null)
         {
@@ -116,10 +107,5 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
     static bool TagVisibleToUser(Tag tag, User user)
     {
         return user.PrivateMode || !tag.Private && !tag.TagGroup.Private;
-    }
-
-    static bool MemoVisibleToUser(Memo memo, User user)
-    {
-        return user.PrivateMode || !memo.Private;
     }
 }

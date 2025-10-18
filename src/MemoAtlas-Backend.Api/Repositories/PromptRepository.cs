@@ -29,8 +29,6 @@ public class PromptRepository(AppDbContext db) : IPromptRepository
         return await db.Prompts
             .VisibleToUser(user)
             .Where(p => p.UserId == user.Id && p.Id == id)
-            .Include(p => p.PromptAnswers)
-            .ThenInclude(pa => pa.Memo)
             .FirstOrDefaultAsync();
     }
 

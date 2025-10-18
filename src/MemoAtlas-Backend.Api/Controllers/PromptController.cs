@@ -24,7 +24,7 @@ public class PromptController(IUserContext auth, IPromptService promptService, I
     public async Task<IActionResult> GetPrompt(int id)
     {
         Prompt prompt = await promptService.GetPromptAsync(auth.GetRequiredUser(), id);
-        return Ok(PromptMapper.ToPromptWithMemosDTO(prompt));
+        return Ok(PromptMapper.ToDTO(prompt));
     }
 
     [HttpGet("stats")]

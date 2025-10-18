@@ -38,8 +38,6 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
         Prompt prompt = await promptRepository.GetPromptAsync(user, id)
             ?? throw new InvalidResourceException("Prompt not found.");
 
-        prompt.PromptAnswers = prompt.PromptAnswers.Where(pa => PromptAnswerVisibleToUser(pa, user)).ToList();
-
         return prompt;
     }
 
@@ -93,10 +91,5 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
 
         promptRepository.DeletePrompt(prompt);
         await promptRepository.SaveChangesAsync();
-    }
-
-    static bool PromptAnswerVisibleToUser(PromptAnswer promptAnswer, User user)
-    {
-        return user.PrivateMode || !promptAnswer.Private && !promptAnswer.Memo.Private;
     }
 }

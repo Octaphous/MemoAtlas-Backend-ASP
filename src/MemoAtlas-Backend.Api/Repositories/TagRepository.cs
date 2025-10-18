@@ -32,7 +32,6 @@ public class TagRepository(AppDbContext db) : ITagRepository
             .VisibleToUser(user)
             .Where(t => t.TagGroup.UserId == user.Id && t.Id == id)
             .Include(t => t.TagGroup)
-            .Include(t => t.Memos)
             .FirstOrDefaultAsync();
     }
 
