@@ -52,7 +52,7 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
 
     public async Task<List<Tag>> SearchTagsAsync(User user, string query)
     {
-        List<Tag> tags = await tagRepository.GetTagsBySearchAsync(user, query);
+        List<Tag> tags = await tagRepository.GetTagsBySearchStringAsync(user, query);
         tags = tags.Where(tag => TagVisibleToUser(tag, user)).ToList();
         return tags;
     }

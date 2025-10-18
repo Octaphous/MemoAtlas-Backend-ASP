@@ -34,7 +34,7 @@ public class PromptRepository(AppDbContext db) : IPromptRepository
             .FirstOrDefaultAsync();
     }
 
-    public Task<List<Prompt>> GetPromptsBySearchAsync(User user, string query)
+    public Task<List<Prompt>> GetPromptsBySearchStringAsync(User user, string query)
     {
         return db.Prompts
             .VisibleToUser(user)

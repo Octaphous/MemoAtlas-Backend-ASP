@@ -49,7 +49,7 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 
     public async Task<List<Memo>> SearchMemosAsync(User user, string query)
     {
-        return await memoRepository.GetMemosBySearchAsync(user, query);
+        return await memoRepository.GetMemosBySearchStringAsync(user, query);
     }
 
     public async Task<Memo> CreateMemoAsync(User user, MemoCreateRequest body)

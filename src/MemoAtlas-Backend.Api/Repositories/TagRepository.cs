@@ -36,7 +36,7 @@ public class TagRepository(AppDbContext db) : ITagRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<List<Tag>> GetTagsBySearchAsync(User user, string query)
+    public async Task<List<Tag>> GetTagsBySearchStringAsync(User user, string query)
     {
         return await db.Tags
             .VisibleToUser(user)

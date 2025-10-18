@@ -45,7 +45,7 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
 
     public async Task<List<Prompt>> SearchPromptsAsync(User user, string query)
     {
-        return await promptRepository.GetPromptsBySearchAsync(user, query);
+        return await promptRepository.GetPromptsBySearchStringAsync(user, query);
     }
 
     public async Task<Prompt> CreatePromptAsync(User user, PromptCreateRequest body)

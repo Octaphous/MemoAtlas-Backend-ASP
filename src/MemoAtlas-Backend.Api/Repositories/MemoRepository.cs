@@ -87,7 +87,7 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .ToListAsync();
     }
 
-    public async Task<List<Memo>> GetMemosBySearchAsync(User user, string query)
+    public async Task<List<Memo>> GetMemosBySearchStringAsync(User user, string query)
     {
         return await db.Memos
             .VisibleToUser(user)

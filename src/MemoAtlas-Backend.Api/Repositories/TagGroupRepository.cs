@@ -60,7 +60,7 @@ public class TagGroupRepository(AppDbContext db) : ITagGroupRepository
             }).ToListAsync();
     }
 
-    public async Task<List<TagGroup>> GetTagGroupsBySearchAsync(User user, string query)
+    public async Task<List<TagGroup>> GetTagGroupsBySearchStringAsync(User user, string query)
     {
         return await db.TagGroups
             .VisibleToUser(user)
