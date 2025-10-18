@@ -36,6 +36,15 @@ public class TagRepository(AppDbContext db) : ITagRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<Tag>> GetTagsBySearchAsync(User user, string query)
+    {
+        return await db.Tags
+            .VisibleToUser(user)
+            .Where(t => t.TagGroup.UserId == user.Id && EF.Functions.Like(t.Name, $"%{query}%"))
+            .Include(t => t.TagGroup)
+            .ToListAsync();
+    }
+
     public void AddTag(Tag tag)
     {
         db.Tags.Add(tag);

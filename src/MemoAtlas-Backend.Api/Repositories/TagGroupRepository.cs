@@ -60,6 +60,14 @@ public class TagGroupRepository(AppDbContext db) : ITagGroupRepository
             }).ToListAsync();
     }
 
+    public async Task<List<TagGroup>> GetTagGroupsBySearchAsync(User user, string query)
+    {
+        return await db.TagGroups
+            .VisibleToUser(user)
+            .Where(tg => tg.UserId == user.Id && EF.Functions.Like(tg.Name, $"%{query}%"))
+            .ToListAsync();
+    }
+
     public void AddTagGroup(TagGroup tagGroup)
     {
         db.TagGroups.Add(tagGroup);

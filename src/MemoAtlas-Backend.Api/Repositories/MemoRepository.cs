@@ -58,6 +58,14 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<Memo>> GetMemosBySearchAsync(User user, string query)
+    {
+        return await db.Memos
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id && (EF.Functions.Like(m.Title, $"%{query}%") || EF.Functions.Like(m.Date.ToString(), $"%{query}%")))
+            .ToListAsync();
+    }
+
     public async Task<bool> DateExistsAsync(User user, DateOnly date)
     {
         return await db.Memos.AnyAsync(m => m.UserId == user.Id && m.Date == date);

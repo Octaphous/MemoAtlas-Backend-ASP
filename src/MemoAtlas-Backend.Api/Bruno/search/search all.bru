@@ -1,0 +1,20 @@
+meta {
+  name: search all
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/search?query=dag
+  body: none
+  auth: inherit
+}
+
+params:query {
+  query: dag
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

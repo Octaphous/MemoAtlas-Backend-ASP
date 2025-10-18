@@ -30,6 +30,11 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         return memo;
     }
 
+    public async Task<List<Memo>> SearchMemosAsync(User user, string query)
+    {
+        return await memoRepository.GetMemosBySearchAsync(user, query);
+    }
+
     public async Task<Memo> CreateMemoAsync(User user, MemoCreateRequest body)
     {
         bool dateExists = await memoRepository.DateExistsAsync(user, body.Date);

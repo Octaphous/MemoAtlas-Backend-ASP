@@ -50,6 +50,13 @@ public class TagService(ITagRepository tagRepository, ITagGroupService tagGroupS
         return tag;
     }
 
+    public async Task<List<Tag>> SearchTagsAsync(User user, string query)
+    {
+        List<Tag> tags = await tagRepository.GetTagsBySearchAsync(user, query);
+        tags = tags.Where(tag => TagVisibleToUser(tag, user)).ToList();
+        return tags;
+    }
+
     public async Task<Tag> CreateTagAsync(User user, TagCreateRequest body)
     {
         TagGroup tagGroup = await tagGroupService.GetTagGroupAsync(user, body.GroupId);

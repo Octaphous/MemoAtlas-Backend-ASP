@@ -7,6 +7,7 @@ public interface IPromptRepository
     Task<List<Prompt>> GetAllPromptsAsync(User user);
     Task<List<Prompt>> GetPromptsAsync(User user, HashSet<int> promptIds);
     Task<Prompt?> GetPromptAsync(User user, int id);
+    Task<List<Prompt>> GetPromptsBySearchAsync(User user, string query);
 
     void AddPrompt(Prompt prompt);
     void DeletePrompt(Prompt prompt);

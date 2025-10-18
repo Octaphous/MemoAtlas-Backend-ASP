@@ -42,6 +42,7 @@ builder.Services.AddScoped<IPromptService, PromptService>();
 builder.Services.AddScoped<IPromptAnswerService, PromptAnswerService>();
 builder.Services.AddScoped<IMemoService, MemoService>();
 builder.Services.AddScoped<IPromptStatsService, PromptStatsService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
 
 var app = builder.Build();
 

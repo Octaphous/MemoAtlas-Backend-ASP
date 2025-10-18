@@ -34,6 +34,14 @@ public class PromptRepository(AppDbContext db) : IPromptRepository
             .FirstOrDefaultAsync();
     }
 
+    public Task<List<Prompt>> GetPromptsBySearchAsync(User user, string query)
+    {
+        return db.Prompts
+            .VisibleToUser(user)
+            .Where(p => p.UserId == user.Id && EF.Functions.Like(p.Question, $"%{query}%"))
+            .ToListAsync();
+    }
+
     public void AddPrompt(Prompt prompt)
     {
         db.Prompts.Add(prompt);

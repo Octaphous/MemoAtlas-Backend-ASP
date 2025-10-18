@@ -52,6 +52,11 @@ public class TagGroupService(ITagGroupRepository tagGroupRepository) : ITagGroup
         return tagGroups;
     }
 
+    public async Task<List<TagGroup>> SearchTagGroupsAsync(User user, string query)
+    {
+        return await tagGroupRepository.GetTagGroupsBySearchAsync(user, query);
+    }
+
     public async Task<TagGroup> CreateTagGroupAsync(User user, TagGroupCreateRequest body)
     {
         if (!AllowedColors.Contains(body.Color))

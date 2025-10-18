@@ -43,6 +43,11 @@ public class PromptService(IPromptRepository promptRepository) : IPromptService
         return prompt;
     }
 
+    public async Task<List<Prompt>> SearchPromptsAsync(User user, string query)
+    {
+        return await promptRepository.GetPromptsBySearchAsync(user, query);
+    }
+
     public async Task<Prompt> CreatePromptAsync(User user, PromptCreateRequest body)
     {
         if (body.Type < 0 || body.Type > 2)
