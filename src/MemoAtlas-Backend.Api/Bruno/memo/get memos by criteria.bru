@@ -5,16 +5,18 @@ meta {
 }
 
 get {
-  url: {{host}}/api/memos/matches-criteria?startDate=20&endDate=20
+  url: {{host}}/api/memos/matches-criteria?startDate=2025-10-01&endDate=2025-10-10&tagIds=1&promptIds=1&pageNumber=1&pageSize=10
   body: none
   auth: inherit
 }
 
 params:query {
-  startDate: 20
-  endDate: 20
-  ~tagIds: 1
-  ~promptIds: 1
+  startDate: 2025-10-01
+  endDate: 2025-10-10
+  tagIds: 1
+  promptIds: 1
+  pageNumber: 1
+  pageSize: 10
 }
 
 settings {

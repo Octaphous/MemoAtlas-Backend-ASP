@@ -33,19 +33,19 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         return memo;
     }
 
-    public async Task<MemosFromCriteriaDTO> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter)
+    public async Task<MemosFromCriteriaDTO> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination)
     {
         Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
 
         IEnumerable<Tag> requestedTags = await tagService.GetTagsAsync(user, filter.TagIds ?? []);
         IEnumerable<Prompt> requestedPrompts = await promptService.GetPromptsAsync(user, filter.PromptIds ?? []);
-        IEnumerable<Memo> memos = await memoRepository.GetMemosByCriteriaAsync(user, filter);
+        PagedResponse<MemoWithTagsAndAnswersDTO> memoResult = await memoRepository.GetMemosByCriteriaAsync(user, filter, pagination);
 
         return new MemosFromCriteriaDTO
         {
             RequestedTags = requestedTags.Select(TagMapper.ToTagWithGroupDTO),
             RequestedPrompts = requestedPrompts.Select(PromptMapper.ToDTO),
-            Memos = memos.Select(MemoMapper.ToMemoWithTagsAndAnswersDTO)
+            Result = memoResult
         };
     }
 

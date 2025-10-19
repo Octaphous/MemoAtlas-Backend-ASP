@@ -23,11 +23,11 @@ public class MemoController(IUserContext auth, IMemoService memoService) : Contr
     }
 
     [HttpGet("matches-criteria")]
-    public async Task<IActionResult> GetMemosByCriteria([FromQuery] MemoCriteriaFilterRequest filter)
+    public async Task<IActionResult> GetMemosByCriteria([FromQuery] MemoCriteriaFilterRequest filter, [FromQuery] PaginationRequest pagination)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        MemosFromCriteriaDTO result = await memoService.GetMemosByCriteriaAsync(auth.GetRequiredUser(), filter);
+        MemosFromCriteriaDTO result = await memoService.GetMemosByCriteriaAsync(auth.GetRequiredUser(), filter, pagination);
         return Ok(result);
     }
 

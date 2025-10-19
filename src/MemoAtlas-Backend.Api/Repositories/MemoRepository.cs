@@ -1,4 +1,5 @@
 using MemoAtlas_Backend.Api.Data;
+using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
@@ -53,9 +54,10 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<List<Memo>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter)
+    public async Task<PagedResponse<MemoWithTagsAndAnswersDTO>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination)
     {
         IQueryable<Memo> query = db.Memos
+            .AsNoTracking()
             .VisibleToUser(user)
             .Where(m => m.UserId == user.Id);
 
@@ -79,12 +81,25 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             query = query.Where(m => m.PromptAnswers.Any(pa => filter.PromptIds.Contains(pa.PromptId)));
         }
 
-        return await query
+        int totalItems = await query.CountAsync();
+
+        List<Memo> memos = await query
             .Include(m => m.Tags)
                 .ThenInclude(t => t.TagGroup)
             .Include(m => m.PromptAnswers)
                 .ThenInclude(pa => pa.Prompt)
+            .OrderByDescending(m => m.Date)
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
             .ToListAsync();
+
+        return new PagedResponse<MemoWithTagsAndAnswersDTO>
+        {
+            TotalCount = totalItems,
+            Items = memos.Select(MemoMapper.ToMemoWithTagsAndAnswersDTO),
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize
+        };
     }
 
     public async Task<List<Memo>> GetMemosBySearchStringAsync(User user, string query)
