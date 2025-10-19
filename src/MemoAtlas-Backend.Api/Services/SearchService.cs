@@ -7,6 +7,8 @@ namespace MemoAtlas_Backend.Api.Services;
 
 public class SearchService(ITagService tagService, IMemoService memoService, ITagGroupService tagGroupService, IPromptService promptService) : ISearchService
 {
+    private const int MaxItemsPerType = 50;
+
     public async Task<SearchResultsDTO> SearchAll(User user, string query)
     {
         List<Memo> memos = await memoService.SearchMemosAsync(user, query);
@@ -16,10 +18,10 @@ public class SearchService(ITagService tagService, IMemoService memoService, ITa
 
         return new SearchResultsDTO
         {
-            Memos = memos.Select(MemoMapper.ToDTO),
-            Tags = tags.Select(TagMapper.ToTagWithGroupDTO),
-            TagGroups = tagGroups.Select(TagGroupMapper.ToDTO),
-            Prompts = prompts.Select(PromptMapper.ToDTO)
+            Memos = memos.Take(MaxItemsPerType).Select(MemoMapper.ToDTO),
+            Tags = tags.Take(MaxItemsPerType).Select(TagMapper.ToTagWithGroupDTO),
+            TagGroups = tagGroups.Take(MaxItemsPerType).Select(TagGroupMapper.ToDTO),
+            Prompts = prompts.Take(MaxItemsPerType).Select(PromptMapper.ToDTO)
         };
     }
 }

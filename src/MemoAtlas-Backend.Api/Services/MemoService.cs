@@ -11,9 +11,11 @@ namespace MemoAtlas_Backend.Api.Services;
 
 public class MemoService(IMemoRepository memoRepository, ITagService tagService, IPromptAnswerService promptAnswerService, IPromptService promptService) : IMemoService
 {
+    private const int MaxDateFilterDaySpan = 365;
+
     public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter)
     {
-        Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate);
+        Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate, MaxDateFilterDaySpan);
 
         return await memoRepository.GetAllMemosWithCountsAsync(user, filter);
     }
