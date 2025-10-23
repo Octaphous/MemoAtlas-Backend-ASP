@@ -9,7 +9,8 @@ public interface IMemoRepository
     Task<List<Memo>> GetAllMemosAsync(User user);
     Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter);
     Task<Memo?> GetMemoAsync(User user, int memoId);
-    Task<PagedResponse<MemoWithTagsAndAnswersDTO>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination);
+    Task<int> CountMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter);
+    Task<List<Memo>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination);
     Task<List<Memo>> GetMemosBySearchStringAsync(User user, string query);
     Task<bool> DateExistsAsync(User user, DateOnly date);
 

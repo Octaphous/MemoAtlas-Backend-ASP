@@ -21,8 +21,7 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         {
             foreach (Memo memo in memos)
             {
-                memo.Tags = memo.Tags.Where(tag => !tag.Private && !tag.TagGroup.Private).ToList();
-                memo.PromptAnswers = memo.PromptAnswers.Where(pa => !pa.Private && !pa.Prompt.Private).ToList();
+                ExcludePrivateResources(user, memo);
             }
         }
 
@@ -42,8 +41,7 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 
         if (!user.PrivateMode)
         {
-            memo.Tags = memo.Tags.Where(tag => !tag.Private && !tag.TagGroup.Private).ToList();
-            memo.PromptAnswers = memo.PromptAnswers.Where(pa => !pa.Private && !pa.Prompt.Private).ToList();
+            ExcludePrivateResources(user, memo);
         }
 
         return memo;
@@ -55,13 +53,33 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 
         IEnumerable<Tag> requestedTags = await tagService.GetTagsAsync(user, filter.TagIds ?? []);
         IEnumerable<Prompt> requestedPrompts = await promptService.GetPromptsAsync(user, filter.PromptIds ?? []);
-        PagedResponse<MemoWithTagsAndAnswersDTO> memoResult = await memoRepository.GetMemosByCriteriaAsync(user, filter, pagination);
+        List<Memo> memoResult = await memoRepository.GetMemosByCriteriaAsync(user, filter, pagination);
+
+        if (!user.PrivateMode)
+        {
+            foreach (Memo memo in memoResult)
+            {
+                ExcludePrivateResources(user, memo);
+            }
+        }
+
+        List<MemoWithTagsAndAnswersDTO> memoResultDTOs = memoResult
+            .Select(MemoMapper.ToMemoWithTagsAndAnswersDTO)
+            .ToList();
+
+        PagedResponse<MemoWithTagsAndAnswersDTO> page = new()
+        {
+            TotalCount = await memoRepository.CountMemosByCriteriaAsync(user, filter),
+            Items = memoResultDTOs,
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize
+        };
 
         return new MemosFromCriteriaDTO
         {
             RequestedTags = requestedTags.Select(TagMapper.ToTagWithGroupDTO),
             RequestedPrompts = requestedPrompts.Select(PromptMapper.ToDTO),
-            Result = memoResult
+            Result = page
         };
     }
 
@@ -177,5 +195,11 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         Memo memo = await GetMemoAsync(user, memoId);
         memoRepository.DeleteMemo(memo);
         await memoRepository.SaveChangesAsync();
+    }
+
+    private static void ExcludePrivateResources(User user, Memo memo)
+    {
+        memo.Tags = memo.Tags.Where(tag => !tag.Private && !tag.TagGroup.Private).ToList();
+        memo.PromptAnswers = memo.PromptAnswers.Where(pa => !pa.Private && !pa.Prompt.Private).ToList();
     }
 }

@@ -67,13 +67,8 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<PagedResponse<MemoWithTagsAndAnswersDTO>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination)
+    private static IQueryable<Memo> ApplyCriteriaFilters(IQueryable<Memo> query, MemoCriteriaFilterRequest filter)
     {
-        IQueryable<Memo> query = db.Memos
-            .AsNoTracking()
-            .VisibleToUser(user)
-            .Where(m => m.UserId == user.Id);
-
         if (filter.StartDate != null)
         {
             query = query.Where(m => m.Date >= filter.StartDate);
@@ -94,9 +89,31 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             query = query.Where(m => m.PromptAnswers.Any(pa => filter.PromptIds.Contains(pa.PromptId)));
         }
 
-        int totalItems = await query.CountAsync();
+        return query;
+    }
 
-        List<Memo> memos = await query
+    public async Task<int> CountMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter)
+    {
+        IQueryable<Memo> query = db.Memos
+            .AsNoTracking()
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id);
+
+        query = ApplyCriteriaFilters(query, filter);
+
+        return await query.CountAsync();
+    }
+
+    public async Task<List<Memo>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination)
+    {
+        IQueryable<Memo> query = db.Memos
+            .AsNoTracking()
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id);
+
+        query = ApplyCriteriaFilters(query, filter);
+
+        return await query
             .Include(m => m.Tags)
                 .ThenInclude(t => t.TagGroup)
             .Include(m => m.PromptAnswers)
@@ -105,14 +122,6 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
             .ToListAsync();
-
-        return new PagedResponse<MemoWithTagsAndAnswersDTO>
-        {
-            TotalCount = totalItems,
-            Items = memos.Select(MemoMapper.ToMemoWithTagsAndAnswersDTO),
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize
-        };
     }
 
     public async Task<List<Memo>> GetMemosBySearchStringAsync(User user, string query)
