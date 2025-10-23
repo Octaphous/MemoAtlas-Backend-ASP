@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{host}}/api/prompts/stats
+  url: {{host}}/api/prompts/stats?startDate=2025-01-01&endDate=2025-12-31
   body: none
   auth: inherit
+}
+
+params:query {
+  startDate: 2025-01-01
+  endDate: 2025-12-31
 }
 
 settings {
