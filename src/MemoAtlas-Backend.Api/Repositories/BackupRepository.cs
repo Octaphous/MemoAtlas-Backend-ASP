@@ -4,6 +4,7 @@ using MemoAtlas_Backend.Api.Models.DTOs.Backup;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace MemoAtlas_Backend.Api.Repositories;
 
@@ -34,18 +35,34 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
 
         return new FullBackupV1
         {
-            Memos = memos.Select(BackupMapper.Memo),
-            TagGroups = tagGroups.Select(BackupMapper.TagGroup),
-            Tags = tags.Select(BackupMapper.Tag),
+            Memos = memos.Select(BackupMapper.Memo).ToList(),
+            TagGroups = tagGroups.Select(BackupMapper.TagGroup).ToList(),
+            Tags = tags.Select(BackupMapper.Tag).ToList(),
             MemoTags = memoTags,
-            Prompts = prompts.Select(BackupMapper.Prompt),
-            PromptAnswerTexts = promptAnswerTexts.Select(BackupMapper.PromptAnswerText),
-            PromptAnswerNumbers = promptAnswerNumbers.Select(BackupMapper.PromptAnswerNumber)
+            Prompts = prompts.Select(BackupMapper.Prompt).ToList(),
+            PromptAnswerTexts = promptAnswerTexts.Select(BackupMapper.PromptAnswerText).ToList(),
+            PromptAnswerNumbers = promptAnswerNumbers.Select(BackupMapper.PromptAnswerNumber).ToList()
         };
     }
 
-    public async Task RestoreFullBackupAsync(User user, FullBackupV1 backup)
+    public async Task TryFullBackupRestoreAsync(User user, FullBackupV1 backup)
     {
+        using IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
+        try
+        {
+            await RestoreFullBackupAsync(user, backup);
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    private async Task RestoreFullBackupAsync(User user, FullBackupV1 backup)
+    {
+        // Delete existing data
         var userMemos = db.Memos.Where(m => m.UserId == user.Id);
         db.Memos.RemoveRange(userMemos);
 
@@ -60,12 +77,20 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
 
         await db.SaveChangesAsync();
 
+        // Dictionaries to map old IDs to new IDs
         Dictionary<int, int> tagGroupIds = [];
-        Dictionary<int, int> tagIds = [];
         Dictionary<int, int> memoIds = [];
         Dictionary<int, int> promptIds = [];
+        Dictionary<int, int> tagIds = [];
 
+        // Lists to hold our new entities
         List<TagGroup> newTagGroups = [];
+        List<Prompt> newPrompts = [];
+        List<Memo> newMemos = [];
+        List<Tag> newTags = [];
+        List<PromptAnswer> newPromptAnswers = [];
+
+        // Restore tag groups
         foreach (TagGroupBackupV1 tg in backup.TagGroups)
         {
             newTagGroups.Add(new()
@@ -76,36 +101,9 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
                 Private = tg.Private
             });
         }
-
         db.TagGroups.AddRange(newTagGroups);
-        await db.SaveChangesAsync();
 
-        for (int i = 0; i < newTagGroups.Count; i++)
-        {
-            tagGroupIds[backup.TagGroups.ElementAt(i).Id] = newTagGroups[i].Id;
-        }
-
-        List<Tag> newTags = [];
-        foreach (TagBackupV1 t in backup.Tags)
-        {
-            newTags.Add(new()
-            {
-                Name = t.Name,
-                Description = t.Description,
-                TagGroupId = tagGroupIds[t.TagGroupId],
-                Private = t.Private
-            });
-        }
-
-        db.Tags.AddRange(newTags);
-        await db.SaveChangesAsync();
-
-        for (int i = 0; i < newTags.Count; i++)
-        {
-            tagIds[backup.Tags.ElementAt(i).Id] = newTags[i].Id;
-        }
-
-        List<Prompt> newPrompts = [];
+        // Restore prompts
         foreach (PromptBackupV1 p in backup.Prompts)
         {
             newPrompts.Add(new()
@@ -116,16 +114,9 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
                 Private = p.Private
             });
         }
-
         db.Prompts.AddRange(newPrompts);
-        await db.SaveChangesAsync();
 
-        for (int i = 0; i < newPrompts.Count; i++)
-        {
-            promptIds[backup.Prompts.ElementAt(i).Id] = newPrompts[i].Id;
-        }
-
-        List<Memo> newMemos = [];
+        // Restore memos
         foreach (MemoBackupV1 m in backup.Memos)
         {
             newMemos.Add(new()
@@ -136,16 +127,41 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
                 Private = m.Private
             });
         }
-
         db.Memos.AddRange(newMemos);
+
+        // Save to give the new tag groups, prompts, and memos their new IDs
         await db.SaveChangesAsync();
+
+        // Map old IDs to new IDs
+        for (int i = 0; i < newTagGroups.Count; i++)
+        {
+            tagGroupIds[backup.TagGroups[i].Id] = newTagGroups[i].Id;
+        }
+
+        for (int i = 0; i < newPrompts.Count; i++)
+        {
+            promptIds[backup.Prompts[i].Id] = newPrompts[i].Id;
+        }
 
         for (int i = 0; i < newMemos.Count; i++)
         {
-            memoIds[backup.Memos.ElementAt(i).Id] = newMemos[i].Id;
+            memoIds[backup.Memos[i].Id] = newMemos[i].Id;
         }
 
-        List<PromptAnswer> newPromptAnswers = [];
+        // Now when the tag groups have got their new IDs, we can restore tags
+        foreach (TagBackupV1 t in backup.Tags)
+        {
+            newTags.Add(new()
+            {
+                Name = t.Name,
+                Description = t.Description,
+                TagGroupId = tagGroupIds[t.TagGroupId],
+                Private = t.Private
+            });
+        }
+        db.Tags.AddRange(newTags);
+
+        // Restore number prompt answers
         foreach (PromptAnswerNumberBackupV1 pan in backup.PromptAnswerNumbers)
         {
             newPromptAnswers.Add(new PromptAnswerNumber
@@ -157,6 +173,7 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
             });
         }
 
+        // Restore text prompt answers
         foreach (PromptAnswerTextBackupV1 pat in backup.PromptAnswerTexts)
         {
             newPromptAnswers.Add(new PromptAnswerText
@@ -167,14 +184,24 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
                 Private = pat.Private
             });
         }
-
         db.PromptAnswers.AddRange(newPromptAnswers);
+
+        // Save to give the new tags and prompt answers their new IDs
         await db.SaveChangesAsync();
 
+        // Map old tag IDs to new tag IDs
+        for (int i = 0; i < newTags.Count; i++)
+        {
+            tagIds[backup.Tags[i].Id] = newTags[i].Id;
+        }
+
+        // Now when the new tags and new memos have their new IDs, we can restore memo-tag relationships
+        Dictionary<int, Memo> memoDict = newMemos.ToDictionary(m => m.Id);
+        Dictionary<int, Tag> tagDict = newTags.ToDictionary(t => t.Id);
         foreach (MemoTagBackupV1 mt in backup.MemoTags)
         {
-            Memo? memo = await db.Memos.FindAsync(memoIds[mt.MemoId]);
-            Tag? tag = await db.Tags.FindAsync(tagIds[mt.TagId]);
+            Memo? memo = memoDict[memoIds[mt.MemoId]];
+            Tag? tag = tagDict[tagIds[mt.TagId]];
 
             if (memo != null && tag != null)
             {

@@ -20,7 +20,7 @@ public class BackupService(IBackupRepository backupRepository) : IBackupService
         switch (backup)
         {
             case FullBackupV1 backupV1:
-                await backupRepository.RestoreFullBackupAsync(user, backupV1);
+                await backupRepository.TryFullBackupRestoreAsync(user, backupV1);
                 break;
             default:
                 throw new InvalidPayloadException($"Backup version is not supported.");

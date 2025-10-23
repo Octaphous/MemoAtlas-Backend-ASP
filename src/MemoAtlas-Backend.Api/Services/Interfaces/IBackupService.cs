@@ -8,4 +8,5 @@ public interface IBackupService
 {
     Task<FullBackupV1> CreateFullBackupAsync(User user);
     Task RestoreFullBackupAsync(User user, IFullBackup backup);
+    // Task<FullBackupV2> UpgradeBackupV1ToV2Async(FullBackupV1 backupV1);
 }
