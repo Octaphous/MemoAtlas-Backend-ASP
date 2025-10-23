@@ -43,6 +43,8 @@ builder.Services.AddScoped<IPromptAnswerService, PromptAnswerService>();
 builder.Services.AddScoped<IMemoService, MemoService>();
 builder.Services.AddScoped<IPromptStatsService, PromptStatsService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IBackupRepository, BackupRepository>();
+builder.Services.AddScoped<IBackupService, BackupService>();
 
 var app = builder.Build();
 

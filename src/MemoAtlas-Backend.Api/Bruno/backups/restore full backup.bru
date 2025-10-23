@@ -1,0 +1,20 @@
+meta {
+  name: restore full backup
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/backups/restore
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(C:\Users\Gizmo\Downloads\memoatlas-empty-backup.json)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

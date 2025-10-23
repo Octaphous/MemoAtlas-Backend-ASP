@@ -1,0 +1,16 @@
+meta {
+  name: create full backup
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/backups/full
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

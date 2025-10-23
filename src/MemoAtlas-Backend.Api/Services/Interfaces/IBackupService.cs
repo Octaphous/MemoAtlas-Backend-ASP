@@ -1,0 +1,10 @@
+using MemoAtlas_Backend.Api.Models.DTOs.Backup;
+using MemoAtlas_Backend.Api.Models.Entities;
+
+namespace MemoAtlas_Backend.Api.Services.Interfaces;
+
+public interface IBackupService
+{
+    Task<FullBackupV1> CreateFullBackupAsync(User user);
+    Task RestoreFullBackupAsync(User user, IFullBackup backup);
+}
