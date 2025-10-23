@@ -11,12 +11,22 @@ public class BackupService(IBackupRepository backupRepository) : IBackupService
 {
     public async Task<FullBackupV1> CreateFullBackupAsync(User user)
     {
+        if (!user.PrivateMode)
+        {
+            throw new UnauthenticatedException("Backups can only be created when Private Mode is enabled.");
+        }
+
         FullBackupV1 backup = await backupRepository.CreateFullBackupAsync(user);
         return backup;
     }
 
     public async Task RestoreFullBackupAsync(User user, IFullBackup backup)
     {
+        if (!user.PrivateMode)
+        {
+            throw new UnauthenticatedException("Backups can only be restored when Private Mode is enabled.");
+        }
+
         switch (backup)
         {
             case FullBackupV1 backupV1:
