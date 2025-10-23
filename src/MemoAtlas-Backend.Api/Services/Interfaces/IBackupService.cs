@@ -1,4 +1,5 @@
 using MemoAtlas_Backend.Api.Models.DTOs.Backup;
+using MemoAtlas_Backend.Api.Models.DTOs.Backup.Interfaces;
 using MemoAtlas_Backend.Api.Models.Entities;
 
 namespace MemoAtlas_Backend.Api.Services.Interfaces;

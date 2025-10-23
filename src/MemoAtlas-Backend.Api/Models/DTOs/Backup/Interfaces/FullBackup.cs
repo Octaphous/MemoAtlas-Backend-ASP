@@ -1,6 +1,7 @@
-namespace MemoAtlas_Backend.Api.Models.DTOs.Backup;
+using System.Text.Json.Serialization;
 
-public interface IFullBackup
-{
-    public string Version { get; }
-}
+namespace MemoAtlas_Backend.Api.Models.DTOs.Backup.Interfaces;
+
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "version")]
+[JsonDerivedType(typeof(FullBackupV1), typeDiscriminator: "1")]
+public interface IFullBackup { }

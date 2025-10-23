@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection("AuthOptions"));
+builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection("Security"));
 
 builder.Services.AddControllers();
 
@@ -24,6 +25,7 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<IBackupSigningService, BackupSigningService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
