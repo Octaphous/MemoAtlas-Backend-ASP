@@ -25,7 +25,8 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
-builder.Services.AddScoped<IBackupSigningService, BackupSigningService>();
+builder.Services.AddSingleton<IBackupSigningService, BackupSigningService>();
+builder.Services.AddSingleton<IBackupFormatter, BackupFormatterService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();

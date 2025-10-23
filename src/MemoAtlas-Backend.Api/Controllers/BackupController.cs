@@ -27,11 +27,18 @@ public class BackupController(IUserContext auth, IBackupService backupService, I
         return File(fileData, contentType, fileName);
     }
 
-    // A readable backup is a backup more suitable for humans to read, meant for users leaving the platform. Not meant for restoring data.
-    [HttpGet("readable")]
-    public async Task<IActionResult> ReadableBackup()
+    // A markdown backup is a backup in markdown format that is easy to read for humans, meant for users leaving the platform. Not meant for restoring data.
+    [HttpGet("markdown")]
+    public async Task<IActionResult> MarkdownBackup()
     {
-        return Ok();
+        string markdownBackup = await backupService.CreateMarkdownBackupAsync(auth.GetRequiredUser());
+
+        byte[] fileData = Encoding.UTF8.GetBytes(markdownBackup);
+        string timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+        string fileName = $"memoatlas-backup-markdown-{timestamp}.md";
+        string contentType = "text/markdown";
+
+        return File(fileData, contentType, fileName);
     }
 
     [HttpPost("restore")]

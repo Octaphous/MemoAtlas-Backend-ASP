@@ -3,6 +3,7 @@ using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Backup;
 using MemoAtlas_Backend.Api.Models.Entities;
 using MemoAtlas_Backend.Api.Repositories.Interfaces;
+using MemoAtlas_Backend.Api.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -12,12 +13,47 @@ public class BackupRepository(AppDbContext db) : IBackupRepository
 {
     public async Task<FullBackupV1> CreateFullBackupAsync(User user)
     {
-        List<Memo> memos = await db.Memos.Where(m => m.UserId == user.Id).Include(m => m.Tags).ToListAsync();
-        List<TagGroup> tagGroups = await db.TagGroups.Where(tg => tg.UserId == user.Id).ToListAsync();
-        List<Tag> tags = await db.Tags.Where(t => t.TagGroup.UserId == user.Id).ToListAsync();
-        List<Prompt> prompts = await db.Prompts.Where(p => p.UserId == user.Id).ToListAsync();
-        List<PromptAnswerText> promptAnswerTexts = await db.PromptAnswerTexts.Where(pa => pa.Memo.UserId == user.Id).ToListAsync();
-        List<PromptAnswerNumber> promptAnswerNumbers = await db.PromptAnswerNumbers.Where(pa => pa.Memo.UserId == user.Id).ToListAsync();
+        List<Memo> memos = await db.Memos
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id)
+            .Include(m => m.Tags)
+            .ToListAsync();
+
+        List<TagGroup> tagGroups = await db.TagGroups
+            .VisibleToUser(user)
+            .Where(tg => tg.UserId == user.Id)
+            .ToListAsync();
+
+        List<Tag> tags = await db.Tags
+            .VisibleToUser(user)
+            .Where(t => t.TagGroup.UserId == user.Id)
+            .ToListAsync();
+
+        List<Prompt> prompts = await db.Prompts
+            .VisibleToUser(user)
+            .Where(p => p.UserId == user.Id)
+            .ToListAsync();
+
+        List<PromptAnswerText> promptAnswerTexts = await db.PromptAnswerTexts
+            .VisibleToUser(user)
+            .Where(pa => pa.Memo.UserId == user.Id)
+            .Include(pa => pa.Memo)
+            .Include(pa => pa.Prompt)
+            .ToListAsync();
+
+        List<PromptAnswerNumber> promptAnswerNumbers = await db.PromptAnswerNumbers
+            .VisibleToUser(user)
+            .Where(pa => pa.Memo.UserId == user.Id)
+            .Include(pa => pa.Memo)
+            .Include(pa => pa.Prompt)
+            .ToListAsync();
+
+        if (!user.PrivateMode)
+        {
+            static bool filter(PromptAnswer pa) => !pa.Prompt.Private && !pa.Memo.Private;
+            promptAnswerTexts = promptAnswerTexts.Where(pa => filter(pa)).ToList();
+            promptAnswerNumbers = promptAnswerNumbers.Where(pa => filter(pa)).ToList();
+        }
 
         List<MemoTagBackupV1> memoTags = [];
 

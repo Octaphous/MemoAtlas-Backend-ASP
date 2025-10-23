@@ -6,6 +6,7 @@ namespace MemoAtlas_Backend.Api.Repositories.Interfaces;
 
 public interface IMemoRepository
 {
+    Task<List<Memo>> GetAllMemosAsync(User user);
     Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter);
     Task<Memo?> GetMemoAsync(User user, int memoId);
     Task<PagedResponse<MemoWithTagsAndAnswersDTO>> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination);

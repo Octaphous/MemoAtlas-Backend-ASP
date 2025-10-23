@@ -11,6 +11,19 @@ namespace MemoAtlas_Backend.Api.Repositories;
 
 public class MemoRepository(AppDbContext db) : IMemoRepository
 {
+    public async Task<List<Memo>> GetAllMemosAsync(User user)
+    {
+        return await db.Memos
+            .VisibleToUser(user)
+            .Where(m => m.UserId == user.Id)
+            .Include(m => m.Tags)
+                .ThenInclude(t => t.TagGroup)
+            .Include(m => m.PromptAnswers)
+                .ThenInclude(pa => pa.Prompt)
+            .OrderByDescending(m => m.Date)
+            .ToListAsync();
+    }
+
     public async Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter)
     {
         IQueryable<Memo> query = db.Memos

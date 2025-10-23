@@ -6,6 +6,7 @@ namespace MemoAtlas_Backend.Api.Services.Interfaces;
 
 public interface IMemoService
 {
+    Task<IEnumerable<Memo>> GetAllMemosAsync(User user);
     Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter);
     Task<Memo> GetMemoAsync(User user, int id);
     Task<MemosFromCriteriaDTO> GetMemosByCriteriaAsync(User user, MemoCriteriaFilterRequest filter, PaginationRequest pagination);

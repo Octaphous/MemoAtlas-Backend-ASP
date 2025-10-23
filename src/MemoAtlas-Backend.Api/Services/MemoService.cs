@@ -13,6 +13,22 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 {
     private const int MaxDateFilterDaySpan = 365;
 
+    public async Task<IEnumerable<Memo>> GetAllMemosAsync(User user)
+    {
+        List<Memo> memos = await memoRepository.GetAllMemosAsync(user);
+
+        if (!user.PrivateMode)
+        {
+            foreach (Memo memo in memos)
+            {
+                memo.Tags = memo.Tags.Where(tag => !tag.Private && !tag.TagGroup.Private).ToList();
+                memo.PromptAnswers = memo.PromptAnswers.Where(pa => !pa.Private && !pa.Prompt.Private).ToList();
+            }
+        }
+
+        return memos;
+    }
+
     public async Task<IEnumerable<MemoWithCountsDTO>> ListAllMemosAsync(User user, MemoFilterRequest filter)
     {
         Validators.ValidateOptionalDateSpan(filter.StartDate, filter.EndDate, MaxDateFilterDaySpan);
