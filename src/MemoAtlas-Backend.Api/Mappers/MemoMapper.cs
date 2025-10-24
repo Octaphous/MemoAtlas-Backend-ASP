@@ -23,6 +23,22 @@ public static class MemoMapper
         Private = memo.Private
     };
 
+    public static MemoWithAnswersDTO ToMemoWithAnswersDTO(Memo memo) => new()
+    {
+        Id = memo.Id,
+        Title = memo.Title,
+        Date = memo.Date,
+        Prompts = memo.PromptAnswers.GroupBy(pa => pa.Prompt).Select(g => new PromptWithAnswerDTO
+        {
+            Id = g.Key.Id,
+            Question = g.Key.Question,
+            Type = g.Key.Type,
+            Private = g.Key.Private,
+            Answers = g.Select(PromptAnswerMapper.ToDTO)
+        }),
+        Private = memo.Private
+    };
+
     public static MemoWithTagsAndAnswersDTO ToMemoWithTagsAndAnswersDTO(Memo memo) => new()
     {
         Id = memo.Id,

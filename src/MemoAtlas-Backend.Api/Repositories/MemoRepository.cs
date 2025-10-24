@@ -68,22 +68,22 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
             query = query.Where(m => m.Date <= filter.EndDate);
         }
 
-        if (filter.TagIds != null && filter.TagIds.Count > 0)
+        if (filter.TagIds.Count > 0)
         {
             query = query.Where(m => m.Tags.Any(t => filter.TagIds.Contains(t.Id)));
         }
 
-        if (filter.PromptIds != null && filter.PromptIds.Count > 0)
+        if (filter.PromptIds.Count > 0)
         {
             query = query.Where(m => m.PromptAnswers.Any(pa => filter.PromptIds.Contains(pa.PromptId)));
         }
 
-        if (filter.ExcludeTagIds != null && filter.ExcludeTagIds.Count > 0)
+        if (filter.ExcludeTagIds.Count > 0)
         {
             query = query.Where(m => m.Tags.All(t => !filter.ExcludeTagIds.Contains(t.Id)));
         }
 
-        if (filter.ExcludePromptIds != null && filter.ExcludePromptIds.Count > 0)
+        if (filter.ExcludePromptIds.Count > 0)
         {
             query = query.Where(m => m.PromptAnswers.All(pa => !filter.ExcludePromptIds.Contains(pa.PromptId)));
         }
@@ -112,11 +112,14 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
 
         query = ApplyCriteriaFilters(query, filter);
 
+        if (filter.PromptIds.Count > 0)
+        {
+            query = query
+                .Include(m => m.PromptAnswers.Where(pa => filter.PromptIds.Contains(pa.PromptId)))
+                .ThenInclude(pa => pa.Prompt);
+        }
+
         return await query
-            .Include(m => m.Tags)
-                .ThenInclude(t => t.TagGroup)
-            .Include(m => m.PromptAnswers)
-                .ThenInclude(pa => pa.Prompt)
             .OrderByDescending(m => m.Date)
             .Skip((pagination.PageNumber - 1) * pagination.PageSize)
             .Take(pagination.PageSize)

@@ -67,11 +67,11 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
             }
         }
 
-        List<MemoWithTagsAndAnswersDTO> memoResultDTOs = memoResult
-            .Select(MemoMapper.ToMemoWithTagsAndAnswersDTO)
+        List<MemoWithAnswersDTO> memoResultDTOs = memoResult
+            .Select(MemoMapper.ToMemoWithAnswersDTO)
             .ToList();
 
-        PagedResponse<MemoWithTagsAndAnswersDTO> page = new()
+        PagedResponse<MemoWithAnswersDTO> page = new()
         {
             TotalCount = await memoRepository.CountMemosByCriteriaAsync(user, filter),
             Items = memoResultDTOs,
