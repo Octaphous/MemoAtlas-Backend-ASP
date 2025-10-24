@@ -53,6 +53,10 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
 
         IEnumerable<Tag> requestedTags = await tagService.GetTagsAsync(user, filter.TagIds ?? []);
         IEnumerable<Prompt> requestedPrompts = await promptService.GetPromptsAsync(user, filter.PromptIds ?? []);
+
+        IEnumerable<Tag> excludedTags = await tagService.GetTagsAsync(user, filter.ExcludeTagIds ?? []);
+        IEnumerable<Prompt> excludedPrompts = await promptService.GetPromptsAsync(user, filter.ExcludePromptIds ?? []);
+
         List<Memo> memoResult = await memoRepository.GetMemosByCriteriaAsync(user, filter, pagination);
 
         if (!user.PrivateMode)
@@ -79,6 +83,8 @@ public class MemoService(IMemoRepository memoRepository, ITagService tagService,
         {
             RequestedTags = requestedTags.Select(TagMapper.ToTagWithGroupDTO),
             RequestedPrompts = requestedPrompts.Select(PromptMapper.ToDTO),
+            ExcludedTags = excludedTags.Select(TagMapper.ToTagWithGroupDTO),
+            ExcludedPrompts = excludedPrompts.Select(PromptMapper.ToDTO),
             Result = page
         };
     }

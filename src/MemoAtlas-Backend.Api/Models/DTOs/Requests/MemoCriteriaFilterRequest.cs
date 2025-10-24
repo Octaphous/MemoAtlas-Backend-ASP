@@ -9,4 +9,8 @@ public class MemoCriteriaFilterRequest
     public HashSet<int>? TagIds { get; set; }
 
     public HashSet<int>? PromptIds { get; set; }
+
+    public HashSet<int>? ExcludeTagIds { get; set; }
+
+    public HashSet<int>? ExcludePromptIds { get; set; }
 }

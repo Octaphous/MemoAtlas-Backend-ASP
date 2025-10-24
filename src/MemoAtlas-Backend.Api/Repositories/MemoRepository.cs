@@ -1,5 +1,4 @@
 using MemoAtlas_Backend.Api.Data;
-using MemoAtlas_Backend.Api.Mappers;
 using MemoAtlas_Backend.Api.Models.DTOs.Requests;
 using MemoAtlas_Backend.Api.Models.DTOs.Responses;
 using MemoAtlas_Backend.Api.Models.Entities;
@@ -77,6 +76,16 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
         if (filter.PromptIds != null && filter.PromptIds.Count > 0)
         {
             query = query.Where(m => m.PromptAnswers.Any(pa => filter.PromptIds.Contains(pa.PromptId)));
+        }
+
+        if (filter.ExcludeTagIds != null && filter.ExcludeTagIds.Count > 0)
+        {
+            query = query.Where(m => m.Tags.All(t => !filter.ExcludeTagIds.Contains(t.Id)));
+        }
+
+        if (filter.ExcludePromptIds != null && filter.ExcludePromptIds.Count > 0)
+        {
+            query = query.Where(m => m.PromptAnswers.All(pa => !filter.ExcludePromptIds.Contains(pa.PromptId)));
         }
 
         return query;
