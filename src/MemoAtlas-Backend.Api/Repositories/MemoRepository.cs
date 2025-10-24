@@ -26,22 +26,12 @@ public class MemoRepository(AppDbContext db) : IMemoRepository
 
     public async Task<List<MemoWithCountsDTO>> GetAllMemosWithCountsAsync(User user, MemoFilterRequest filter)
     {
-        IQueryable<Memo> query = db.Memos
+        return await db.Memos
             .AsNoTracking()
             .VisibleToUser(user)
-            .Where(m => m.UserId == user.Id);
-
-        if (filter.StartDate != null)
-        {
-            query = query.Where(m => m.Date >= filter.StartDate);
-        }
-
-        if (filter.EndDate != null)
-        {
-            query = query.Where(m => m.Date <= filter.EndDate);
-        }
-
-        return await query
+            .Where(m => m.UserId == user.Id)
+            .Where(m => m.Date >= filter.StartDate)
+            .Where(m => m.Date <= filter.EndDate)
             .OrderByDescending(m => m.Date)
             .Select(m => new MemoWithCountsDTO
             {
